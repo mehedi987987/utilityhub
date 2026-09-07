@@ -1,6 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function CountdownPage() {
   const [target, setTarget] = useState('')
@@ -35,6 +36,7 @@ export default function CountdownPage() {
 
   return (
     <ToolLayout title="Countdown Timer" description="Set a countdown to any date and time.">
+      <TokenGate slug="countdown">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <div className="space-y-3 mb-4">
@@ -75,6 +77,7 @@ export default function CountdownPage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

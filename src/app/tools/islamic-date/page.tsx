@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 // Simple Hijri approximation
 function gregorianToHijri(year: number, month: number, day: number) {
@@ -35,6 +36,7 @@ export default function IslamicDatePage() {
 
   return (
     <ToolLayout title="Islamic Date Converter" description="Convert Gregorian dates to Hijri (Islamic) calendar dates.">
+      <TokenGate slug="islamic-date">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <h2 className="text-sm font-bold mb-3">Select Gregorian Date</h2>
@@ -58,6 +60,7 @@ export default function IslamicDatePage() {
           </p>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

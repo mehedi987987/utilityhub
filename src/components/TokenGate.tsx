@@ -1,48 +1,76 @@
 "use client"
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
+import { TOKENS, isToolGated } from '@/lib/authConfig'
 
-export default function TokenGate({ children }: { children: ReactNode }) {
+interface TokenGateProps {
+  /** Tool slug, used to decide whether this tool is gated at all. */
+  slug: string
+  children: ReactNode
+}
+
+export default function TokenGate({ slug, children }: TokenGateProps) {
   const { user, loading } = useAuth()
+  const pathname = usePathname()
+
+  // Not gated by config — render normally.
+  if (!isToolGated(slug)) return <>{children}</>
 
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full"></div>
+      <div className="min-h-[45vh] flex items-center justify-center">
+        <div className="spinner" />
       </div>
     )
   }
 
   if (!user) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <p className="text-4xl mb-3">🔐</p>
-          <h2 className="text-xl font-bold mb-2">Login Required</h2>
-          <p className="text-sm text-gray-500 mb-4">
-            Please login to use this tool. New users get 100 free tokens!
+      <div className="max-w-[460px] mx-auto py-10">
+        <div className="card p-8 text-center">
+          <span className="icon-tile mx-auto mb-4" aria-hidden="true">🔐</span>
+          <h2 className="text-lg font-bold text-white mb-2">Sign in to use this tool</h2>
+          <p className="text-sm text-gray-400 leading-relaxed mb-6">
+            Creating an account is free and takes a few seconds. You get{' '}
+            <strong className="text-violet-300">{TOKENS.signupBonus} tokens</strong> straight away —
+            enough for {Math.floor(TOKENS.signupBonus / TOKENS.costPerUse)} runs.
           </p>
-          <Link href="/login" className="inline-block bg-blue text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-blue-700 transition">
-            Login / Sign Up
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href={`/signup?next=${encodeURIComponent(pathname)}`}
+              className="btn-primary text-sm"
+            >
+              Sign up free
+            </Link>
+            <Link
+              href={`/login?next=${encodeURIComponent(pathname)}`}
+              className="btn-secondary text-sm"
+            >
+              I have an account
+            </Link>
+          </div>
         </div>
       </div>
     )
   }
 
-  if (user.tokens < 10) {
+  if (user.tokens < TOKENS.costPerUse) {
     return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <div className="text-center max-w-md">
-          <p className="text-4xl mb-3">🪙</p>
-          <h2 className="text-xl font-bold mb-2">Not Enough Tokens</h2>
-          <p className="text-sm text-gray-500 mb-2">
-            You need at least 10 tokens to use a tool. Your balance: <strong>{user.tokens}</strong> tokens.
+      <div className="max-w-[460px] mx-auto py-10">
+        <div className="card p-8 text-center">
+          <span className="icon-tile mx-auto mb-4" aria-hidden="true">🪙</span>
+          <h2 className="text-lg font-bold text-white mb-2">You are out of tokens</h2>
+          <p className="text-sm text-gray-400 leading-relaxed mb-1">
+            This tool costs <strong className="text-white">{TOKENS.costPerUse} tokens</strong> per
+            run. Your balance is <strong className="text-white">{user.tokens}</strong>.
           </p>
-          <p className="text-xs text-gray-400 mb-4">Watch ads to earn more tokens. Each ad gives 50 tokens.</p>
-          <Link href="/earn-tokens" className="inline-block bg-green-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-green-700 transition">
-            Earn Tokens
+          <p className="text-xs text-gray-500 mb-6">
+            Watch a short ad to get {TOKENS.rewardPerAd} tokens, or claim your daily bonus.
+          </p>
+          <Link href="/earn-tokens" className="btn-primary text-sm">
+            🎁 Earn free tokens
           </Link>
         </div>
       </div>

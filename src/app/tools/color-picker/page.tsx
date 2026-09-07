@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function ColorPickerPage() {
   const [color, setColor] = useState('#3b82f6')
@@ -58,6 +59,7 @@ export default function ColorPickerPage() {
 
   return (
     <ToolLayout title="Color Picker" icon="🎨" description="Pick colors and get HEX, RGB, HSL values instantly.">
+      <TokenGate slug="color-picker">
       <div className="max-w-2xl mx-auto">
         <div className="card p-6 mb-4">
           {/* Color Preview */}
@@ -106,6 +108,7 @@ export default function ColorPickerPage() {
           </div>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

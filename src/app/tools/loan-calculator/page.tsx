@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function LoanCalculatorPage() {
   const [amount, setAmount] = useState('100000')
@@ -32,6 +33,7 @@ export default function LoanCalculatorPage() {
 
   return (
     <ToolLayout title="Loan EMI Calculator" icon="💰" description="Calculate your monthly EMI, total interest, and payment schedule.">
+      <TokenGate slug="loan-calculator">
       <div className="max-w-xl mx-auto">
         <div className="card p-6 mb-4">
           <div className="space-y-4 mb-6">
@@ -100,6 +102,7 @@ export default function LoanCalculatorPage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

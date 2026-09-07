@@ -1,31 +1,205 @@
 "use client"
 import Link from 'next/link'
-import { useState } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { tools, TOOL_COUNT } from '@/lib/toolCatalog'
+import { useAuth } from '@/contexts/AuthContext'
+import TokenBalance from '@/components/TokenBalance'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [acctOpen, setAcctOpen] = useState(false)
+  const { user, logout } = useAuth()
+  const acctRef = useRef<HTMLDivElement>(null)
+  const [query, setQuery] = useState('')
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
+  const boxRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  // Close the drawer / results when navigating.
+  useEffect(() => {
+    setMenuOpen(false)
+    setOpen(false)
+    setAcctOpen(false)
+    setQuery('')
+  }, [pathname])
+
+  // Cmd/Ctrl+K focus
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        inputRef.current?.focus()
+      }
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  // Click outside closes the dropdown.
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false)
+      if (acctRef.current && !acctRef.current.contains(e.target as Node)) setAcctOpen(false)
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [])
+
+  const results = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return []
+    return tools
+      .filter((t) => t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q))
+      .slice(0, 6)
+  }, [query])
+
+  const go = (slug: string) => {
+    setOpen(false)
+    setQuery('')
+    router.push(`/tools/${slug}`)
+  }
+
+  const popular = tools.filter((t) => t.featured).slice(0, 4)
 
   return (
     <>
       <header className="h-16 glass sticky top-0 z-30">
-        <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center gap-6">
-          <Link href="/" className="text-xl font-extrabold tracking-tight whitespace-nowrap">
-            <span className="gradient-text">Utility</span><span className="text-white">Hub</span>
+        <div className="max-w-[1200px] mx-auto px-4 h-16 flex items-center gap-4">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2.5 whitespace-nowrap">
+            <span className="brand-mark" aria-hidden="true">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 20V9l8-5 8 5v11" />
+                <path d="M10 20v-6h4v6" />
+              </svg>
+            </span>
+            <span className="text-lg font-extrabold tracking-tight">
+              <span className="text-white">Work</span>
+              <span className="gradient-text">Gate</span>
+            </span>
           </Link>
-          <nav className="hidden md:flex gap-1 flex-1">
-            <Link href="/" className="text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition">Home</Link>
-            <Link href="/#tools" className="text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition">All Tools</Link>
-            <Link href="/#categories" className="text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition">Categories</Link>
-          </nav>
-          <div className="flex items-center gap-3 ml-auto">
+
+          {/* Search */}
+          <div ref={boxRef} className="relative flex-1 max-w-md mx-auto hidden md:block">
+            <label className="command-bar">
+              <span className="text-gray-500 text-sm" aria-hidden="true">🔍</span>
+              <input
+                ref={inputRef}
+                type="search"
+                value={query}
+                onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
+                onFocus={() => setOpen(true)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && results[0]) go(results[0].slug) }}
+                placeholder={`Search ${TOOL_COUNT} tools...`}
+                aria-label="Search tools"
+              />
+              <kbd className="kbd">⌘K</kbd>
+            </label>
+
+            {open && query.trim() && (
+              <div className="absolute top-full left-0 right-0 mt-2 card p-2 max-h-[340px] overflow-y-auto z-40">
+                {results.length > 0 ? (
+                  results.map((t) => (
+                    <button
+                      key={t.slug}
+                      onClick={() => go(t.slug)}
+                      className="w-full flex items-center gap-3 p-2.5 rounded-xl text-left hover:bg-white/5 transition"
+                    >
+                      <span className="text-lg" aria-hidden="true">{t.icon}</span>
+                      <span className="flex-1 min-w-0">
+                        <span className="block text-sm text-white font-medium">{t.title}</span>
+                        <span className="block text-xs text-gray-500 truncate">{t.desc}</span>
+                      </span>
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-xs text-gray-500 text-center py-6">
+                    No tools match &quot;{query}&quot;
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Right side */}
+          <div className="flex items-center gap-2 ml-auto">
+            <Link
+              href="/#tools"
+              className="hidden lg:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
+            >
+              All Tools
+            </Link>
+            <Link
+              href="/faq"
+              className="hidden lg:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
+            >
+              FAQ
+            </Link>
+            <Link
+              href="/about"
+              className="hidden lg:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
+            >
+              About
+            </Link>
+
+            {user ? (
+              <>
+                <span className="hidden sm:inline-flex"><TokenBalance /></span>
+                <div ref={acctRef} className="relative">
+                  <button
+                    onClick={() => setAcctOpen((v) => !v)}
+                    className="avatar-btn"
+                    aria-haspopup="menu"
+                    aria-expanded={acctOpen}
+                    aria-label="Account menu"
+                  >
+                    {(user.displayName || user.email).charAt(0).toUpperCase()}
+                  </button>
+
+                  {acctOpen && (
+                    <div className="account-menu card" role="menu">
+                      <div className="px-3 py-2.5 border-b border-white/5 mb-1">
+                        <p className="text-sm font-semibold text-white truncate">{user.displayName}</p>
+                        <p className="text-[11px] text-gray-500 truncate">{user.email}</p>
+                      </div>
+                      <Link href="/account" className="account-menu-item" role="menuitem">
+                        <span aria-hidden="true">👤</span> My account
+                      </Link>
+                      <Link href="/earn-tokens" className="account-menu-item" role="menuitem">
+                        <span aria-hidden="true">🎁</span> Earn tokens
+                      </Link>
+                      <Link href="/faq" className="account-menu-item" role="menuitem">
+                        <span aria-hidden="true">❓</span> Help
+                      </Link>
+                      <button
+                        onClick={() => { logout(); setAcctOpen(false); router.push('/') }}
+                        className="account-menu-item"
+                        role="menuitem"
+                      >
+                        <span aria-hidden="true">🚪</span> Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <Link href="/login" className="hidden sm:inline-flex btn-primary !py-2 !px-4 !text-sm">
+                Sign in
+              </Link>
+            )}
+
             <button
               className="md:hidden w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1.5 hover:bg-white/10 transition"
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
             >
-              <span className="block w-5 h-0.5 bg-white rounded-full"></span>
-              <span className="block w-5 h-0.5 bg-white rounded-full"></span>
-              <span className="block w-5 h-0.5 bg-white rounded-full"></span>
+              <span className="block w-5 h-0.5 bg-white rounded-full" />
+              <span className="block w-5 h-0.5 bg-white rounded-full" />
+              <span className="block w-5 h-0.5 bg-white rounded-full" />
             </button>
           </div>
         </div>
@@ -33,47 +207,97 @@ export default function Header() {
 
       {/* Mobile drawer */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50">
+        <div className="fixed inset-0 z-50 md:hidden">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
-          <div className="absolute top-0 right-0 w-[280px] h-full bg-[#0f0f1a] border-l border-white/10 shadow-2xl animate-slide-up overflow-y-auto">
+          <div className="absolute top-0 right-0 w-[290px] h-full bg-[#0b0b13] border-l border-white/10 shadow-2xl animate-slide-up overflow-y-auto">
             <div className="flex justify-between items-center p-5 border-b border-white/10">
-              <b className="text-lg">
-                <span className="gradient-text">Utility</span><span className="text-white">Hub</span>
-              </b>
-              <button 
-                onClick={() => setMenuOpen(false)} 
+              <span className="flex items-center gap-2.5">
+                <span className="brand-mark" aria-hidden="true">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M4 20V9l8-5 8 5v11" />
+                    <path d="M10 20v-6h4v6" />
+                  </svg>
+                </span>
+                <b className="text-base">
+                  <span className="text-white">Work</span>
+                  <span className="gradient-text">Gate</span>
+                </b>
+              </span>
+              <button
+                onClick={() => setMenuOpen(false)}
                 className="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition"
+                aria-label="Close menu"
               >
                 ✕
               </button>
             </div>
-            
+
+            {/* Account block */}
+            <div className="p-4 border-b border-white/10">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="avatar-btn !w-10 !h-10 !text-sm">
+                      {(user.displayName || user.email).charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{user.displayName}</p>
+                      <p className="text-[11px] text-gray-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href="/account" onClick={() => setMenuOpen(false)} className="btn-secondary flex-1 !py-2 !text-xs text-center">
+                      Account
+                    </Link>
+                    <Link href="/earn-tokens" onClick={() => setMenuOpen(false)} className="btn-primary flex-1 !py-2 !text-xs text-center">
+                      🪙 {user.tokens}
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className="flex gap-2">
+                  <Link href="/login" onClick={() => setMenuOpen(false)} className="btn-secondary flex-1 !py-2.5 !text-xs text-center">
+                    Sign in
+                  </Link>
+                  <Link href="/signup" onClick={() => setMenuOpen(false)} className="btn-primary flex-1 !py-2.5 !text-xs text-center">
+                    Sign up free
+                  </Link>
+                </div>
+              )}
+            </div>
+
             <nav className="p-4">
-              <Link href="/" className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition" onClick={() => setMenuOpen(false)}>
-                <span className="text-lg">🏠</span> Home
-              </Link>
-              <Link href="/#tools" className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition" onClick={() => setMenuOpen(false)}>
-                <span className="text-lg">🛠️</span> All Tools
-              </Link>
-              <Link href="/#categories" className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition" onClick={() => setMenuOpen(false)}>
-                <span className="text-lg">📂</span> Categories
-              </Link>
+              {[
+                { href: '/', icon: '🏠', label: 'Home' },
+                { href: '/#tools', icon: '🛠️', label: 'All Tools' },
+                { href: '/faq', icon: '❓', label: 'FAQ' },
+                { href: '/about', icon: 'ℹ️', label: 'About' },
+              ].map((l) => (
+                <Link
+                  key={l.label}
+                  href={l.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition"
+                >
+                  <span className="text-lg" aria-hidden="true">{l.icon}</span> {l.label}
+                </Link>
+              ))}
 
-              <div className="divider my-3"></div>
-              <p className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">Popular Tools</p>
+              <div className="divider my-3" />
+              <p className="px-4 py-2 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                Popular Tools
+              </p>
 
-              <Link href="/tools/passport-photo" className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition" onClick={() => setMenuOpen(false)}>
-                <span className="text-lg">📷</span> Photo Maker
-              </Link>
-              <Link href="/tools/remove-bg" className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition" onClick={() => setMenuOpen(false)}>
-                <span className="text-lg">✂️</span> Remove Background
-              </Link>
-              <Link href="/tools/image-enhancer" className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition" onClick={() => setMenuOpen(false)}>
-                <span className="text-lg">✨</span> Image Enhancer
-              </Link>
-              <Link href="/tools/image-resizer" className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition" onClick={() => setMenuOpen(false)}>
-                <span className="text-lg">📐</span> Image Resizer
-              </Link>
+              {popular.map((t) => (
+                <Link
+                  key={t.slug}
+                  href={`/tools/${t.slug}`}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 py-3 px-4 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition"
+                >
+                  <span className="text-lg" aria-hidden="true">{t.icon}</span> {t.title}
+                </Link>
+              ))}
             </nav>
           </div>
         </div>

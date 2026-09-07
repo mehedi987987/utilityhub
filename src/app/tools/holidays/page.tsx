@@ -1,5 +1,6 @@
 "use client"
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 const holidays2025 = [
   { date: 'Feb 21', name: 'International Mother Language Day', type: 'National' },
@@ -28,6 +29,7 @@ const holidays2025 = [
 export default function HolidaysPage() {
   return (
     <ToolLayout title="Bangladesh Public Holidays 2025" description="Official public holidays in Bangladesh for the year 2025.">
+      <TokenGate slug="holidays">
       <div className="max-w-2xl mx-auto">
         <div className="card overflow-hidden">
           <div className="grid grid-cols-[80px_1fr_100px] bg-white/5 border-b border-white/10 px-5 py-3 text-xs font-bold text-gray-300">
@@ -49,6 +51,7 @@ export default function HolidaysPage() {
           </p>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

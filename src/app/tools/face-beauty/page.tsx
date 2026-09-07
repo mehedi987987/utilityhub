@@ -1,6 +1,8 @@
 "use client"
 import { useState, useRef, useCallback } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
+import BeforeAfter from '@/components/BeforeAfter'
 
 export default function FaceBeautyPage() {
   const [original, setOriginal] = useState<string | null>(null)
@@ -20,22 +22,6 @@ export default function FaceBeautyPage() {
     reddenLips: 0,
   })
 
-  const handleFile = useCallback((f: File) => {
-    if (!f.type.startsWith('image/')) return
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string
-      setOriginal(dataUrl)
-      setPreview(null)
-      const img = new window.Image()
-      img.onload = () => {
-        imgRef.current = img
-        applyEffects(img, settings)
-      }
-      img.src = dataUrl
-    }
-    reader.readAsDataURL(f)
-  }, [settings])
 
   const applyEffects = useCallback((img: HTMLImageElement, s: typeof settings) => {
     setProcessing(true)
@@ -139,6 +125,23 @@ export default function FaceBeautyPage() {
     }, 100)
   }, [])
 
+  const handleFile = useCallback((f: File) => {
+    if (!f.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string
+      setOriginal(dataUrl)
+      setPreview(null)
+      const img = new window.Image()
+      img.onload = () => {
+        imgRef.current = img
+        applyEffects(img, settings)
+      }
+      img.src = dataUrl
+    }
+    reader.readAsDataURL(f)
+  }, [settings, applyEffects])
+
   const handleSettingChange = (key: keyof typeof settings, value: number) => {
     const newSettings = { ...settings, [key]: value }
     setSettings(newSettings)
@@ -170,7 +173,7 @@ export default function FaceBeautyPage() {
     if (!preview) return
     const a = document.createElement('a')
     a.href = preview
-    a.download = 'utilityhub-face-beauty.jpg'
+    a.download = 'workgate-face-beauty.jpg'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -186,6 +189,7 @@ export default function FaceBeautyPage() {
 
   return (
     <ToolLayout title="Face Beauty" icon="💄" description="AI-powered face beautification - smooth skin, whiten, remove blemishes, and more.">
+      <TokenGate slug="face-beauty">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Preview Area */}
         <div>
@@ -219,22 +223,13 @@ export default function FaceBeautyPage() {
                       <p className="text-sm text-gray-300 font-medium">{progress}</p>
                     </div>
                   )}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs font-bold text-gray-400 mb-2">Original</p>
-                      <img src={original} alt="Original" className="w-full max-h-[400px] object-contain rounded-xl" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-400 mb-2">Enhanced</p>
-                      {preview ? (
-                        <img src={preview} alt="Enhanced" className="w-full max-h-[400px] object-contain rounded-xl" />
-                      ) : (
-                        <div className="h-[200px] flex items-center justify-center bg-white/5 rounded-xl text-gray-400">
-                          Adjust settings to see preview
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <BeforeAfter
+                    before={original}
+                    after={preview}
+                    beforeLabel="Original"
+                    afterLabel="Enhanced"
+                    placeholder="Adjust the settings on the right to see the retouched result"
+                  />
                 </div>
               )}
             </div>
@@ -288,12 +283,13 @@ export default function FaceBeautyPage() {
             <ul className="text-xs text-gray-400 space-y-2">
               <li>• Use a clear, well-lit face photo</li>
               <li>• Face should be clearly visible</li>
-              <li>• Start with "Natural" preset</li>
+              <li>• Start with &quot;Natural&quot; preset</li>
               <li>• Adjust sliders gradually</li>
             </ul>
           </div>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

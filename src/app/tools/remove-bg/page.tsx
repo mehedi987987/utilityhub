@@ -1,22 +1,9 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
-
-// API Keys - Round Robin
-const API_KEYS = [
-  'idruNCT1z4Px6kkHv6DvLX59',
-  '8uh1KQSyxdewxPrMWHnUNvVa',
-  'JNby6HLYG9wEB4qETkzydVih',
-  'PkTLpmRx8wMAYLyZC8WiwJzR',
-  '12pkC767GmSDwaEwzsAoBY8j',
-]
-
-let keyIndex = 0
-function getNextKey(): string {
-  const key = API_KEYS[keyIndex % API_KEYS.length]
-  keyIndex++
-  return key
-}
+import TokenGate from '@/components/TokenGate'
+import ErrorBanner from '@/components/ErrorBanner'
+import BeforeAfter from '@/components/BeforeAfter'
 
 const PRESET_COLORS = [
   '#FFFFFF', '#000000', '#FF0000', '#00FF00', '#0000FF',
@@ -31,6 +18,7 @@ export default function RemoveBgPage() {
   const [processing, setProcessing] = useState(false)
   const [progress, setProgress] = useState('')
   const [step, setStep] = useState<'upload' | 'removed' | 'bgAdded'>('upload')
+  const [error, setError] = useState<string | null>(null)
   
   // Background options
   const [bgType, setBgType] = useState<'transparent' | 'color' | 'image'>('transparent')
@@ -44,7 +32,12 @@ export default function RemoveBgPage() {
 
   const handleFile = async (f: File) => {
     if (!f.type.startsWith('image/')) return
+    if (f.size > 12 * 1024 * 1024) {
+      setError('Image is larger than 12 MB. Please pick a smaller file.')
+      return
+    }
 
+    setError(null)
     setProcessing(true)
     setProgress('Removing background...')
 
@@ -52,49 +45,28 @@ export default function RemoveBgPage() {
     reader.onload = (e) => setOriginal(e.target?.result as string)
     reader.readAsDataURL(f)
 
-    let lastError: any = null
+    try {
+      const formData = new FormData()
+      formData.append('image_file', f)
 
-    for (let attempt = 0; attempt < API_KEYS.length; attempt++) {
-      const key = getNextKey()
+      const response = await fetch('/api/remove-bg', { method: 'POST', body: formData })
 
-      try {
-        const formData = new FormData()
-        formData.append('image_file', f)
-        formData.append('size', 'auto')
-
-        const response = await fetch('https://api.remove.bg/v1.0/removebg', {
-          method: 'POST',
-          headers: { 'X-Api-Key': key },
-          body: formData,
-        })
-
-        if (response.ok) {
-          const blob = await response.blob()
-          const url = URL.createObjectURL(blob)
-          setNoBg(url)
-          setPreview(url)
-          setStep('removed')
-          setProgress('Done!')
-          setProcessing(false)
-          return
-        }
-
-        if (response.status === 402 || response.status === 429) {
-          setProgress('Trying another server...')
-          continue
-        }
-
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.errors?.[0]?.title || `Error: ${response.status}`)
-
-      } catch (err: any) {
-        lastError = err
-        continue
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        throw new Error(data.error || `Request failed (${response.status}).`)
       }
-    }
 
-    alert('Processing failed. Please try again later.')
-    setProcessing(false)
+      const blob = await response.blob()
+      const url = URL.createObjectURL(blob)
+      setNoBg(url)
+      setPreview(url)
+      setStep('removed')
+      setProgress('Done!')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Processing failed. Please try again later.')
+    } finally {
+      setProcessing(false)
+    }
   }
 
   const applyBackground = async () => {
@@ -163,7 +135,7 @@ export default function RemoveBgPage() {
     if (!preview) return
     const a = document.createElement('a')
     a.href = preview
-    a.download = 'utilityhub-photo.png'
+    a.download = 'workgate-photo.png'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -185,10 +157,11 @@ export default function RemoveBgPage() {
 
   return (
     <ToolLayout title="Remove & Change Background" icon="✂️" description="Remove background and add new one - solid color, gradient, or custom image.">
+      <TokenGate slug="remove-bg">
       <div className="max-w-4xl mx-auto">
         {/* Upload Area */}
         {step === 'upload' && (
-          <div className="bg-white border border-white/10 rounded-2xl p-5 mb-4">
+          <div className="card rounded-2xl p-5 mb-4">
             <div
               className="upload-area min-h-[250px] flex items-center justify-center text-center overflow-hidden"
               onClick={() => fileRef.current?.click()}
@@ -213,9 +186,11 @@ export default function RemoveBgPage() {
           </div>
         )}
 
+        <ErrorBanner message={error} onDismiss={() => setError(null)} />
+
         {/* Processing */}
         {processing && (
-          <div className="bg-white border border-white/10 rounded-2xl p-8 mb-4 text-center">
+          <div className="card border border-white/10 rounded-2xl p-8 mb-4 text-center">
             <div className="spinner mx-auto mb-3"></div>
             <p className="text-sm text-gray-300 font-medium">{progress}</p>
           </div>
@@ -226,25 +201,30 @@ export default function RemoveBgPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
             {/* Preview */}
             <div>
-              <div className="bg-white border border-white/10 rounded-2xl p-5 mb-4">
-                <div className="grid grid-cols-3 gap-3 mb-3">
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 text-center">Original</p>
-                    <img src={original!} alt="Original" className="w-full h-40 object-contain rounded-xl bg-white/5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 text-center">No Background</p>
-                    <div className="bg-[repeating-conic-gradient(#e5e5e5_0_25%,#fff_0_50%)] bg-[length:16px_16px] rounded-xl h-40 flex items-center justify-center">
-                      <img src={noBg!} alt="No BG" className="max-w-full max-h-full object-contain" />
+              <div className="card rounded-2xl p-5 mb-4">
+                <BeforeAfter
+                  before={original!}
+                  after={preview}
+                  beforeLabel="Original"
+                  afterLabel="Result"
+                  transparent
+                />
+
+                {/* Cut-out reference thumbnail */}
+                {noBg && noBg !== preview && (
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/5">
+                    <div className="ba-checker rounded-lg w-16 h-16 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={noBg} alt="Cut-out with transparent background" className="max-w-full max-h-full object-contain" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-gray-300">Transparent cut-out</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">
+                        The background you pick is composited onto this.
+                      </p>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 text-center">Final Result</p>
-                    <div className="bg-white/5 rounded-xl h-40 flex items-center justify-center overflow-hidden">
-                      <img src={preview!} alt="Preview" className="max-w-full max-h-full object-contain" />
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="flex gap-3">
@@ -256,24 +236,24 @@ export default function RemoveBgPage() {
             {/* Background Options */}
             <div className="space-y-4">
               {/* BG Type Selector */}
-              <div className="bg-white border border-white/10 rounded-2xl p-5">
+              <div className="card rounded-2xl p-5">
                 <h3 className="font-bold text-sm text-white mb-3">🎨 Background Type</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     onClick={() => { setBgType('transparent'); setPreview(noBg) }}
-                    className={`py-2.5 rounded-xl text-xs font-semibold transition ${bgType === 'transparent' ? 'bg-purple-100 text-purple-700' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                    className={`py-2.5 rounded-xl text-xs font-semibold transition ${bgType === 'transparent' ? 'bg-purple-500/20 text-purple-300' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
                   >
                     🚫 None
                   </button>
                   <button
                     onClick={() => { setBgType('color'); applyBackground() }}
-                    className={`py-2.5 rounded-xl text-xs font-semibold transition ${bgType === 'color' ? 'bg-purple-100 text-purple-700' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                    className={`py-2.5 rounded-xl text-xs font-semibold transition ${bgType === 'color' ? 'bg-purple-500/20 text-purple-300' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
                   >
                     🎨 Color
                   </button>
                   <button
                     onClick={() => { setBgType('image'); if (bgImage) applyBackground() }}
-                    className={`py-2.5 rounded-xl text-xs font-semibold transition ${bgType === 'image' ? 'bg-purple-100 text-purple-700' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
+                    className={`py-2.5 rounded-xl text-xs font-semibold transition ${bgType === 'image' ? 'bg-purple-500/20 text-purple-300' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
                   >
                     🖼️ Image
                   </button>
@@ -282,7 +262,7 @@ export default function RemoveBgPage() {
 
               {/* Color Options */}
               {bgType === 'color' && (
-                <div className="bg-white border border-white/10 rounded-2xl p-5">
+                <div className="card rounded-2xl p-5">
                   <h3 className="font-bold text-sm text-white mb-3">🎨 Choose Color</h3>
                   <div className="grid grid-cols-5 gap-2 mb-3">
                     {PRESET_COLORS.map((color) => (
@@ -309,7 +289,7 @@ export default function RemoveBgPage() {
 
               {/* Image Options */}
               {bgType === 'image' && (
-                <div className="bg-white border border-white/10 rounded-2xl p-5">
+                <div className="card rounded-2xl p-5">
                   <h3 className="font-bold text-sm text-white mb-3">🖼️ Background Image</h3>
                   <div
                     className="upload-area p-4 text-center cursor-pointer mb-3"
@@ -346,7 +326,7 @@ export default function RemoveBgPage() {
               )}
 
               {/* Quick Presets */}
-              <div className="bg-white border border-white/10 rounded-2xl p-5">
+              <div className="card rounded-2xl p-5">
                 <h3 className="font-bold text-sm text-white mb-3">⚡ Quick Presets</h3>
                 <div className="grid grid-cols-2 gap-2">
                   <button
@@ -396,22 +376,22 @@ export default function RemoveBgPage() {
         {/* Features */}
         {step === 'upload' && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-            <div className="bg-white border border-white/10 rounded-2xl p-5 text-center">
+            <div className="card rounded-2xl p-5 text-center">
               <div className="text-3xl mb-2">✂️</div>
               <h3 className="font-bold text-sm text-white">Remove BG</h3>
               <p className="text-xs text-gray-400 mt-1">AI-powered removal</p>
             </div>
-            <div className="bg-white border border-white/10 rounded-2xl p-5 text-center">
+            <div className="card rounded-2xl p-5 text-center">
               <div className="text-3xl mb-2">🎨</div>
               <h3 className="font-bold text-sm text-white">Solid Color</h3>
               <p className="text-xs text-gray-400 mt-1">Any color you want</p>
             </div>
-            <div className="bg-white border border-white/10 rounded-2xl p-5 text-center">
+            <div className="card rounded-2xl p-5 text-center">
               <div className="text-3xl mb-2">🖼️</div>
               <h3 className="font-bold text-sm text-white">Custom Image</h3>
               <p className="text-xs text-gray-400 mt-1">Use your own BG</p>
             </div>
-            <div className="bg-white border border-white/10 rounded-2xl p-5 text-center">
+            <div className="card rounded-2xl p-5 text-center">
               <div className="text-3xl mb-2">🌫️</div>
               <h3 className="font-bold text-sm text-white">Blur Effect</h3>
               <p className="text-xs text-gray-400 mt-1">Blur background</p>
@@ -419,6 +399,7 @@ export default function RemoveBgPage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

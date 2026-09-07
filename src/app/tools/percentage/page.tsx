@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function PercentagePage() {
   const [mode, setMode] = useState<'percent' | 'change' | 'of'>('percent')
@@ -24,6 +25,7 @@ export default function PercentagePage() {
 
   return (
     <ToolLayout title="Percentage Calculator" description="Calculate percentages, percentage change, and find X% of a number.">
+      <TokenGate slug="percentage">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <div className="flex gap-2 mb-4">
@@ -56,6 +58,7 @@ export default function PercentagePage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

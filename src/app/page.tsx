@@ -1,150 +1,242 @@
 "use client"
 import Link from 'next/link'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { categories, tools, TOOL_COUNT, type CategoryId } from '@/lib/toolCatalog'
+import FaqAccordion from '@/components/FaqAccordion'
+import { topFaqs, faqItems } from '@/lib/faqData'
+import AdRail from '@/components/ads/AdRail'
 
-const categories = [
-  { icon: '🎓', title: 'Education', desc: 'SSC, HSC & University', color: 'from-blue-600 to-blue-700' },
-  { icon: '🕌', title: 'Islamic', desc: 'Date & Zakat tools', color: 'from-emerald-600 to-emerald-700' },
-  { icon: '🧮', title: 'Calculators', desc: 'Everyday calculations', color: 'from-orange-600 to-orange-700' },
-  { icon: '🖼️', title: 'Images & Files', desc: 'Photo & PDF tools', color: 'from-purple-600 to-purple-700' },
-]
-
-const tools = [
-  { slug: 'passport-photo', icon: '📷', title: 'Passport Photo Maker', desc: 'Create passport size photos', badge: 'Popular', badgeColor: 'bg-blue-500/20 text-blue-400' },
-  { slug: 'remove-bg', icon: '✂️', title: 'Remove Background', desc: 'AI-powered background removal', badge: 'New', badgeColor: 'bg-green-500/20 text-green-400' },
-  { slug: 'face-beauty', icon: '💄', title: 'Face Beauty', desc: 'AI face beautification', badge: 'New', badgeColor: 'bg-pink-500/20 text-pink-400' },
-  { slug: 'image-enhancer', icon: '✨', title: 'Image Enhancer', desc: 'Improve photo quality', badge: 'New', badgeColor: 'bg-purple-500/20 text-purple-400' },
-  { slug: 'ssc-grammar', icon: '📖', title: 'SSC Grammar Solution', desc: 'Interactive grammar book', badge: 'New', badgeColor: 'bg-amber-500/20 text-amber-400' },
-  { slug: 'qr-generator', icon: '🔲', title: 'QR Code Generator', desc: 'Generate QR codes', badge: 'Popular', badgeColor: 'bg-blue-500/20 text-blue-400' },
-  { slug: 'password-generator', icon: '🔐', title: 'Password Generator', desc: 'Generate secure passwords', badge: '', badgeColor: '' },
-  { slug: 'word-counter', icon: '📝', title: 'Word Counter', desc: 'Count words & characters', badge: '', badgeColor: '' },
-  { slug: 'color-picker', icon: '🎨', title: 'Color Picker', desc: 'Pick & convert colors', badge: '', badgeColor: '' },
-  { slug: 'bmi-calculator', icon: '⚖️', title: 'BMI Calculator', desc: 'Calculate Body Mass Index', badge: '', badgeColor: '' },
-  { slug: 'loan-calculator', icon: '💰', title: 'Loan EMI Calculator', desc: 'Calculate monthly EMI', badge: '', badgeColor: '' },
-  { slug: 'image-resizer', icon: '📐', title: 'Image Resizer', desc: 'Resize any image', badge: '', badgeColor: '' },
-  { slug: 'image-compressor', icon: '📦', title: 'Image Compressor', desc: 'Reduce file size', badge: '', badgeColor: '' },
-  { slug: 'image-size', icon: '🖼️', title: 'Image Size Maker', desc: 'Set custom dimensions', badge: '', badgeColor: '' },
-  { slug: 'signature-maker', icon: '✍️', title: 'Signature Maker', desc: 'Resize signatures', badge: '', badgeColor: '' },
-  { slug: 'jpg-to-pdf', icon: '📄', title: 'JPG to PDF', desc: 'Convert images to PDF', badge: '', badgeColor: '' },
-  { slug: 'pdf-to-jpg', icon: '🖼️', title: 'PDF to JPG', desc: 'Convert PDF to images', badge: '', badgeColor: '' },
-  { slug: 'ssc-gpa', icon: '🎓', title: 'SSC GPA Calculator', desc: 'Calculate SSC GPA', badge: '', badgeColor: '' },
-  { slug: 'hsc-gpa', icon: '📚', title: 'HSC GPA Calculator', desc: 'Calculate HSC GPA', badge: '', badgeColor: '' },
-  { slug: 'cgpa', icon: '🏛️', title: 'University CGPA', desc: 'Calculate CGPA', badge: '', badgeColor: '' },
-  { slug: 'islamic-date', icon: '🌙', title: 'Islamic Date Converter', desc: 'Gregorian to Hijri', badge: '', badgeColor: '' },
-  { slug: 'zakat', icon: '💰', title: 'Zakat Calculator', desc: 'Calculate Zakat', badge: '', badgeColor: '' },
-  { slug: 'percentage', icon: '🔢', title: 'Percentage Calculator', desc: 'Quick calculations', badge: '', badgeColor: '' },
-  { slug: 'age', icon: '🎂', title: 'Age Calculator', desc: 'Find exact age', badge: '', badgeColor: '' },
-  { slug: 'date-diff', icon: '📅', title: 'Date Difference', desc: 'Days between dates', badge: '', badgeColor: '' },
-  { slug: 'countdown', icon: '⏱️', title: 'Countdown Timer', desc: 'Countdown to any date', badge: '', badgeColor: '' },
-  { slug: 'holidays', icon: '🇧🇩', title: 'Bangladesh Holidays', desc: 'Public holidays 2025', badge: '', badgeColor: '' },
-]
+const badgeStyles: Record<string, string> = {
+  'Most Popular': 'bg-violet-500/15 text-violet-300 border border-violet-500/25',
+  Popular: 'bg-blue-500/15 text-blue-300 border border-blue-500/25',
+  New: 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25',
+}
 
 export default function Home() {
+  const [query, setQuery] = useState('')
+  const [activeCat, setActiveCat] = useState<CategoryId | null>(null)
+  const searchRef = useRef<HTMLInputElement>(null)
+
+  // Cmd/Ctrl+K focuses the search box, like the reference UI.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        searchRef.current?.focus()
+      }
+      if (e.key === 'Escape') searchRef.current?.blur()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  const visibleTools = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    return tools.filter((t) => {
+      const matchesCat = !activeCat || t.cat === activeCat
+      const matchesQuery =
+        !q || t.title.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)
+      return matchesCat && matchesQuery
+    })
+  }, [query, activeCat])
+
+  const isFiltering = Boolean(query.trim() || activeCat)
+  const featured = visibleTools.filter((t) => t.featured)
+  const rest = isFiltering ? visibleTools : visibleTools.filter((t) => !t.featured)
+  const activeCatTitle = categories.find((c) => c.id === activeCat)?.title
+
+  const resetFilters = () => {
+    setQuery('')
+    setActiveCat(null)
+  }
+
   return (
     <>
-      {/* Hero */}
-      <section className="hero-gradient text-white py-16 md:py-24">
-        <div className="max-w-[1200px] mx-auto px-4 relative z-10">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-1.5 mb-6">
-              <span className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-              <span className="text-xs font-medium text-blue-400">20+ free tools available</span>
-            </div>
-            <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-tight mb-6">
-              Useful tools.<br />
-              <span className="gradient-text">Nothing complicated.</span>
-            </h1>
-            <p className="text-base text-gray-400 leading-relaxed max-w-lg mb-8">
-              Resize photos, remove backgrounds, calculate grades, convert files — all free, no registration required.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link href="/#tools" className="btn-primary inline-flex items-center gap-2">
-                🛠️ Explore Tools
-              </Link>
-              <Link href="/tools/remove-bg" className="btn-secondary inline-flex items-center gap-2">
-                ✂️ Try Remove BG
-              </Link>
-            </div>
+      {/* ---------------- Hero ---------------- */}
+      <section className="hero-glow dot-grid pt-16 pb-10">
+        <div className="max-w-[1200px] mx-auto px-4 text-center">
+          <div className="status-pill mb-8">
+            <span className="status-dot" />
+            All {TOOL_COUNT} tools operational
+          </div>
+
+          <h1 className="text-4xl md:text-[64px] md:leading-[1.05] font-extrabold tracking-tight text-white mb-6">
+            Every tool you need.
+            <br />
+            <span className="headline-gradient">One gate to work.</span>
+          </h1>
+
+          <p className="text-base text-gray-400 leading-relaxed max-w-2xl mx-auto mb-10">
+            Stop hunting for sketchy download sites. Resize photos, remove backgrounds, convert
+            PDFs and run the calculators you actually use — free, private, and right in your
+            browser.
+          </p>
+
+          {/* Search */}
+          <div className="max-w-xl mx-auto mb-10">
+            <label className="command-bar">
+              <span className="text-gray-500 text-sm" aria-hidden="true">🔍</span>
+              <input
+                ref={searchRef}
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={`Search ${TOOL_COUNT} tools, converters, calculators...`}
+                aria-label="Search tools"
+              />
+              <kbd className="kbd hidden sm:inline-block">⌘K</kbd>
+            </label>
+          </div>
+
+          {/* Category pills */}
+          <div className="flex flex-wrap justify-center gap-2.5">
+            <button
+              type="button"
+              className="filter-pill"
+              aria-pressed={activeCat === null}
+              onClick={() => setActiveCat(null)}
+            >
+              All Tools
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                className="filter-pill"
+                aria-pressed={activeCat === cat.id}
+                onClick={() => setActiveCat(activeCat === cat.id ? null : cat.id)}
+              >
+                <span aria-hidden="true">{cat.icon}</span>
+                {cat.title}
+              </button>
+            ))}
           </div>
         </div>
       </section>
 
       <div className="max-w-[1200px] mx-auto px-4">
-        {/* Categories */}
-        <section className="py-12" id="categories">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white">Browse by category</h2>
-            <p className="text-sm text-gray-500 mt-1">Find the right tool for your task</p>
+        {/* ---------------- Featured ---------------- */}
+        {!isFiltering && featured.length > 0 && (
+          <section className="pt-6 pb-2">
+            <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr] gap-4">
+              {featured.map((tool, i) => (
+                <Link key={tool.slug} href={`/tools/${tool.slug}`} className="feature-card group">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="icon-tile" aria-hidden="true">{tool.icon}</div>
+                    {tool.badge && (
+                      <span className={`badge ${badgeStyles[tool.badge]}`}>{tool.badge}</span>
+                    )}
+                  </div>
+                  <h2 className={`font-bold text-white mb-2 ${i === 0 ? 'text-2xl' : 'text-lg'}`}>
+                    {tool.title}
+                  </h2>
+                  <p className="text-sm text-gray-400 leading-relaxed">{tool.desc}</p>
+                  <span className="mt-auto pt-5 text-sm font-semibold text-violet-300 inline-flex items-center gap-1.5">
+                    Open tool
+                    <span className="group-hover:translate-x-1 transition-transform">→</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ---------------- Tool grid ---------------- */}
+        <section className="py-10" id="tools">
+          <div className="flex items-end justify-between gap-4 mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-white">
+                {activeCatTitle ?? (isFiltering ? 'Search results' : 'All tools')}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {visibleTools.length} of {TOOL_COUNT} tools
+              </p>
+            </div>
+            {isFiltering && (
+              <button
+                onClick={resetFilters}
+                className="text-sm text-violet-300 hover:text-violet-200 font-medium"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {categories.map((cat) => (
-              <div key={cat.title} className="category-card group">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition shadow-lg`}>
-                  {cat.icon}
-                </div>
-                <h3 className="font-semibold text-white">{cat.title}</h3>
-                <p className="text-xs text-gray-500 mt-0.5">{cat.desc}</p>
+
+          {rest.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {rest.map((tool) => (
+                <Link key={tool.slug} href={`/tools/${tool.slug}`} className="tool-card group">
+                  <div className="flex items-start gap-3.5">
+                    <div className="icon-tile flex-shrink-0" aria-hidden="true">{tool.icon}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-white text-sm">{tool.title}</h3>
+                        {tool.badge && (
+                          <span className={`badge ${badgeStyles[tool.badge]}`}>{tool.badge}</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1 leading-relaxed">{tool.desc}</p>
+                    </div>
+                    <span className="text-gray-600 group-hover:text-violet-300 group-hover:translate-x-1 transition-all flex-shrink-0">
+                      →
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="card p-12 text-center">
+              <p className="text-3xl mb-3">🔍</p>
+              <h3 className="font-semibold text-white text-sm mb-1">No tools match your search</h3>
+              <p className="text-xs text-gray-500 mb-5">
+                Try a different keyword, or browse every tool.
+              </p>
+              <button onClick={resetFilters} className="btn-secondary text-sm">
+                Reset filters
+              </button>
+            </div>
+          )}
+        </section>
+
+        <AdRail />
+
+        {/* ---------------- Why Work Gate ---------------- */}
+        <section className="pb-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { icon: '🔒', title: 'Private by default', desc: 'Files are processed in your browser' },
+              { icon: '🆓', title: 'No signup, no limits', desc: 'Every tool is free to use' },
+              { icon: '⚡', title: 'Instant results', desc: 'No queues, no waiting rooms' },
+              { icon: '📱', title: 'Works anywhere', desc: 'Phone, tablet or desktop' },
+            ].map((f) => (
+              <div key={f.title} className="card p-6">
+                <div className="icon-tile mb-3" aria-hidden="true">{f.icon}</div>
+                <h3 className="font-semibold text-white text-sm">{f.title}</h3>
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{f.desc}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* All Tools */}
-        <section className="py-6" id="tools">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white">All tools</h2>
-            <p className="text-sm text-gray-500 mt-1">{tools.length} tools ready to use</p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tools.map((tool, i) => (
+        {/* ---------------- FAQ ---------------- */}
+        <section className="pb-16" id="faq">
+          <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8 lg:gap-12">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">
+                Questions? <span className="headline-gradient">Answered.</span>
+              </h2>
+              <p className="text-sm text-gray-400 leading-relaxed mb-5">
+                The things people ask most before trusting a free tool with their files.
+              </p>
               <Link
-                key={tool.slug}
-                href={`/tools/${tool.slug}`}
-                className="tool-card group"
-                style={{ animationDelay: `${i * 30}ms` }}
+                href="/faq"
+                className="text-sm font-semibold text-violet-300 hover:text-violet-200 inline-flex items-center gap-1.5 group"
               >
-                <div className="flex items-start gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-blue-500/10 flex items-center justify-center text-xl group-hover:bg-blue-500/20 group-hover:scale-110 transition flex-shrink-0">
-                    {tool.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-white text-sm">{tool.title}</h3>
-                      {tool.badge && (
-                        <span className={`badge ${tool.badgeColor}`}>{tool.badge}</span>
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{tool.desc}</p>
-                  </div>
-                  <span className="text-gray-600 text-xl group-hover:text-blue-400 group-hover:translate-x-1 transition flex-shrink-0">→</span>
-                </div>
+                Read all {faqItems.length} questions
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </Link>
-            ))}
-          </div>
-        </section>
-
-        {/* Features */}
-        <section className="py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="card p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-2xl mx-auto mb-3">🆓</div>
-              <h3 className="font-semibold text-white text-sm">100% Free</h3>
-              <p className="text-xs text-gray-500 mt-1">No hidden charges</p>
             </div>
-            <div className="card p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center text-2xl mx-auto mb-3">⚡</div>
-              <h3 className="font-semibold text-white text-sm">Lightning Fast</h3>
-              <p className="text-xs text-gray-500 mt-1">Results in seconds</p>
-            </div>
-            <div className="card p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-2xl mx-auto mb-3">📱</div>
-              <h3 className="font-semibold text-white text-sm">Mobile Friendly</h3>
-              <p className="text-xs text-gray-500 mt-1">Works on any device</p>
-            </div>
-            <div className="card p-6 text-center">
-              <div className="w-12 h-12 rounded-xl bg-orange-500/10 flex items-center justify-center text-2xl mx-auto mb-3">🔒</div>
-              <h3 className="font-semibold text-white text-sm">Privacy First</h3>
-              <p className="text-xs text-gray-500 mt-1">Your data stays safe</p>
-            </div>
+            <FaqAccordion items={topFaqs} defaultOpen={0} />
           </div>
         </section>
       </div>

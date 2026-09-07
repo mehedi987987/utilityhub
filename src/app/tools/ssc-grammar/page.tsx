@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef, useEffect } from 'react'
 import { bookPages } from '@/lib/bookData'
+import TokenGate from '@/components/TokenGate'
 
 export default function SSCGrammarPage() {
   const [currentPage, setCurrentPage] = useState(0)
@@ -106,6 +107,7 @@ export default function SSCGrammarPage() {
   }
 
   return (
+    <TokenGate slug="ssc-grammar">
     <div className="min-h-screen bg-gradient-to-br from-amber-950 via-amber-900 to-amber-950">
       {/* Header */}
       <div className="bg-amber-950/90 backdrop-blur-sm border-b border-amber-800/50 sticky top-0 z-30">
@@ -293,5 +295,6 @@ export default function SSCGrammarPage() {
         </div>
       )}
     </div>
+    </TokenGate>
   )
 }

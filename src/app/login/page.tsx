@@ -1,0 +1,17 @@
+import type { Metadata } from 'next'
+import { Suspense } from 'react'
+import AuthForm from '@/components/AuthForm'
+
+export const metadata: Metadata = {
+  title: 'Sign in',
+  description: 'Sign in to your Work Gate account to use the tools with your tokens.',
+  robots: { index: false, follow: true },
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <AuthForm mode="login" />
+    </Suspense>
+  )
+}

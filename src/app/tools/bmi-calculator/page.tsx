@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function BMICalculatorPage() {
   const [heightFt, setHeightFt] = useState('')
@@ -33,6 +34,7 @@ export default function BMICalculatorPage() {
 
   return (
     <ToolLayout title="BMI Calculator" icon="⚖️" description="Calculate your Body Mass Index (BMI) instantly.">
+      <TokenGate slug="bmi-calculator">
       <div className="max-w-xl mx-auto">
         <div className="card p-6 mb-4">
           {/* Height */}
@@ -111,6 +113,7 @@ export default function BMICalculatorPage() {
           </div>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

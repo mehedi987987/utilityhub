@@ -1,134 +1,27 @@
 "use client"
 import { useState, useRef, useCallback } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
+import BeforeAfter from '@/components/BeforeAfter'
+import ErrorBanner from '@/components/ErrorBanner'
 
-// API Keys
-const APIS = {
-  clipdrop: '1ffda1f6c26f46d3854713dd3a669cfa67f454147e260f431cef2740164d0363281631580ef5e2c9ec9421f775ce1de2',
-  deepai: 'd4443183-d969-4781-a257-620b9a8f481d',
-  claid: '719398383b8842a793bf0869ac03c905',
-  pixelcut: 'sk_0df4580b971e45069a30334e48c1546f',
-}
+async function enhanceWithAI(
+  imageBlob: Blob,
+  type: 'upscale' | 'denoise' | 'sharpen'
+): Promise<string> {
+  const formData = new FormData()
+  formData.append('image', imageBlob, 'image.jpg')
+  formData.append('type', type)
 
-// AI Enhancement with auto-rotation
-async function enhanceWithAI(imageBlob: Blob, type: 'upscale' | 'denoise' | 'sharpen'): Promise<string> {
-  const apis = [
-    // 1. Try Clipdrop (Best quality)
-    async () => {
-      const formData = new FormData()
-      formData.append('image_file', imageBlob, 'image.jpg')
-      formData.append('target_width', '2048')
-      formData.append('target_height', '2048')
+  const res = await fetch('/api/enhance', { method: 'POST', body: formData })
 
-      const res = await fetch('https://clipdrop-api.co/image-upscaling/v1/upscale', {
-        method: 'POST',
-        headers: { 'x-api-key': APIS.clipdrop },
-        body: formData,
-      })
-
-      if (!res.ok) {
-        const errText = await res.text()
-        throw new Error(`Clipdrop: ${res.status} - ${errText}`)
-      }
-      const blob = await res.blob()
-      return URL.createObjectURL(blob)
-    },
-
-    // 2. Try DeepAI
-    async () => {
-      const endpoint = type === 'upscale' 
-        ? 'https://api.deepai.org/api/torch-srgan'
-        : 'https://api.deepai.org/api/waifu2x'
-
-      const formData = new FormData()
-      formData.append('image', imageBlob)
-
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'api-key': APIS.deepai },
-        body: formData,
-      })
-
-      if (!res.ok) throw new Error(`DeepAI: ${res.status}`)
-      const data = await res.json()
-      if (!data.output_url) throw new Error('DeepAI: No output URL')
-      
-      // Fetch the result image
-      const imgRes = await fetch(data.output_url)
-      const imgBlob = await imgRes.blob()
-      return URL.createObjectURL(imgBlob)
-    },
-
-    // 3. Try Claid.ai
-    async () => {
-      const formData = new FormData()
-      formData.append('image', imageBlob, 'image.jpg')
-      
-      const operations: any = {}
-      if (type === 'upscale') {
-        operations.upscale = { factor: 2 }
-      } else if (type === 'denoise') {
-        operations.denoise = { strength: 'medium' }
-      } else {
-        operations.sharpen = { strength: 'medium' }
-      }
-
-      const res = await fetch('https://api.claid.ai/v1beta1/image/edit', {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${APIS.claid}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          input: imageBlob,
-          operations: operations,
-        }),
-      })
-
-      if (!res.ok) throw new Error(`Claid: ${res.status}`)
-      const data = await res.json()
-      const resultUrl = data.output?.url || data.url
-      if (!resultUrl) throw new Error('Claid: No output URL')
-      
-      const imgRes = await fetch(resultUrl)
-      const imgBlob = await imgRes.blob()
-      return URL.createObjectURL(imgBlob)
-    },
-
-    // 4. Try Pixelcut
-    async () => {
-      const formData = new FormData()
-      formData.append('image', imageBlob, 'image.jpg')
-      formData.append('scale', type === 'upscale' ? '4' : '2')
-
-      const res = await fetch('https://api.pixelcut.ai/v1/upscale', {
-        method: 'POST',
-        headers: { 
-          'Authorization': `Bearer ${APIS.pixelcut}`,
-        },
-        body: formData,
-      })
-
-      if (!res.ok) throw new Error(`Pixelcut: ${res.status}`)
-      const blob = await res.blob()
-      return URL.createObjectURL(blob)
-    },
-  ]
-
-  let lastError: any = null
-
-  for (const apiFn of apis) {
-    try {
-      const result = await apiFn()
-      return result
-    } catch (err: any) {
-      lastError = err
-      console.log('API failed, trying next:', err.message)
-      continue
-    }
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || `Enhancement failed (${res.status}).`)
   }
 
-  throw new Error(lastError?.message || 'All APIs failed')
+  const blob = await res.blob()
+  return URL.createObjectURL(blob)
 }
 
 export default function ImageEnhancerPage() {
@@ -136,6 +29,7 @@ export default function ImageEnhancerPage() {
   const [preview, setPreview] = useState<string | null>(null)
   const [processing, setProcessing] = useState(false)
   const [progress, setProgress] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState<'adjust' | 'ai'>('adjust')
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const imgRef = useRef<HTMLImageElement | null>(null)
@@ -150,22 +44,6 @@ export default function ImageEnhancerPage() {
     vignette: 0,
   })
 
-  const handleFile = useCallback((f: File) => {
-    if (!f.type.startsWith('image/')) return
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string
-      setOriginal(dataUrl)
-      setPreview(null)
-      const img = new window.Image()
-      img.onload = () => {
-        imgRef.current = img
-        applyEffects(img, settings)
-      }
-      img.src = dataUrl
-    }
-    reader.readAsDataURL(f)
-  }, [settings])
 
   const applyEffects = useCallback((img: HTMLImageElement, s: typeof settings) => {
     setProcessing(true)
@@ -253,9 +131,27 @@ export default function ImageEnhancerPage() {
     }, 50)
   }, [])
 
+  const handleFile = useCallback((f: File) => {
+    if (!f.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string
+      setOriginal(dataUrl)
+      setPreview(null)
+      const img = new window.Image()
+      img.onload = () => {
+        imgRef.current = img
+        applyEffects(img, settings)
+      }
+      img.src = dataUrl
+    }
+    reader.readAsDataURL(f)
+  }, [settings, applyEffects])
+
   const handleAIEnhance = async (type: 'upscale' | 'denoise' | 'sharpen') => {
     if (!original) return
 
+    setError(null)
     setProcessing(true)
     setProgress(`Starting AI ${type}...`)
 
@@ -268,9 +164,10 @@ export default function ImageEnhancerPage() {
       const resultUrl = await enhanceWithAI(blob, type)
       setPreview(resultUrl)
       setProgress('Done!')
-    } catch (err: any) {
-      console.error('AI Enhancement error:', err)
-      setProgress('AI failed. Using manual enhancement...')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      setError(`${message} Falling back to manual enhancement.`)
+      setProgress('')
       
       if (imgRef.current) {
         const autoSettings = { brightness: 10, contrast: 15, saturation: 10, sharpness: 30, warmth: 0, vignette: 0 }
@@ -306,7 +203,7 @@ export default function ImageEnhancerPage() {
     if (!preview) return
     const a = document.createElement('a')
     a.href = preview
-    a.download = 'utilityhub-enhanced.jpg'
+    a.download = 'workgate-enhanced.jpg'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -322,10 +219,12 @@ export default function ImageEnhancerPage() {
 
   return (
     <ToolLayout title="Image Enhancer" icon="✨" description="Improve your photos with manual adjustments or AI-powered enhancement.">
+      <TokenGate slug="image-enhancer">
+      <ErrorBanner message={error} onDismiss={() => setError(null)} />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Preview Area */}
         <div>
-          <div className="bg-white border border-white/10 rounded-2xl p-5 mb-4">
+          <div className="card rounded-2xl p-5 mb-4">
             <div
               className="upload-area min-h-[300px] flex items-center justify-center text-center overflow-hidden relative"
               onClick={() => !original && fileRef.current?.click()}
@@ -355,22 +254,13 @@ export default function ImageEnhancerPage() {
                       <p className="text-sm text-gray-300 font-medium">{progress}</p>
                     </div>
                   )}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs font-bold text-gray-400 mb-2">Original</p>
-                      <img src={original} alt="Original" className="w-full max-h-[400px] object-contain rounded-xl" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-gray-400 mb-2">Enhanced</p>
-                      {preview ? (
-                        <img src={preview} alt="Enhanced" className="w-full max-h-[400px] object-contain rounded-xl" />
-                      ) : (
-                        <div className="h-[200px] flex items-center justify-center bg-white/5 rounded-xl text-gray-400">
-                          Adjust settings to see preview
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <BeforeAfter
+                    before={original}
+                    after={preview}
+                    beforeLabel="Original"
+                    afterLabel="Enhanced"
+                    placeholder="Adjust the settings or run an AI enhancement to see the result"
+                  />
                 </div>
               )}
             </div>
@@ -388,16 +278,16 @@ export default function ImageEnhancerPage() {
         {/* Controls */}
         <div className="space-y-4">
           {/* Tab Switcher */}
-          <div className="bg-white border border-white/10 rounded-2xl p-2 flex gap-1">
+          <div className="card rounded-2xl p-2 flex gap-1">
             <button
               onClick={() => setActiveTab('adjust')}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition ${activeTab === 'adjust' ? 'bg-purple-100 text-purple-700' : 'text-gray-300 hover:bg-white/10'}`}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition ${activeTab === 'adjust' ? 'bg-purple-500/20 text-purple-300' : 'text-gray-300 hover:bg-white/10'}`}
             >
               🎨 Manual
             </button>
             <button
               onClick={() => setActiveTab('ai')}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition ${activeTab === 'ai' ? 'bg-purple-100 text-purple-700' : 'text-gray-300 hover:bg-white/10'}`}
+              className={`flex-1 py-2.5 rounded-xl text-sm font-semibold transition ${activeTab === 'ai' ? 'bg-purple-500/20 text-purple-300' : 'text-gray-300 hover:bg-white/10'}`}
             >
               🤖 AI Enhance
             </button>
@@ -406,7 +296,7 @@ export default function ImageEnhancerPage() {
           {/* Manual Controls */}
           {activeTab === 'adjust' && (
             <>
-              <div className="bg-white border border-white/10 rounded-2xl p-5">
+              <div className="card rounded-2xl p-5">
                 <h3 className="font-bold text-sm text-white mb-3">🎨 Quick Presets</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <button onClick={() => handlePreset('auto')} className="py-2.5 px-3 bg-white/5 hover:bg-purple-50 hover:text-purple-700 rounded-xl text-xs font-semibold transition">✨ Auto</button>
@@ -418,7 +308,7 @@ export default function ImageEnhancerPage() {
                 </div>
               </div>
 
-              <div className="bg-white border border-white/10 rounded-2xl p-5">
+              <div className="card rounded-2xl p-5">
                 <h3 className="font-bold text-sm text-white mb-4">🔧 Adjustments</h3>
                 <div className="space-y-4">
                   <Slider label="☀️ Brightness" value={settings.brightness} onChange={(v) => handleSettingChange('brightness', v)} />
@@ -434,7 +324,7 @@ export default function ImageEnhancerPage() {
 
           {/* AI Controls */}
           {activeTab === 'ai' && (
-            <div className="bg-white border border-white/10 rounded-2xl p-5">
+            <div className="card rounded-2xl p-5">
               <h3 className="font-bold text-sm text-white mb-4">🤖 AI Enhancement</h3>
               <p className="text-xs text-gray-400 mb-4">
                 Uses multiple AI services for best results. Auto-rotates if one fails.
@@ -471,6 +361,7 @@ export default function ImageEnhancerPage() {
           )}
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

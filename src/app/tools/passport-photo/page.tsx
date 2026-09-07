@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef, useCallback } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 const presets = [
   { name: 'Passport / Visa', tag: 'STANDARD', desc: '35 × 45 mm · portrait', w: 413, h: 531 },
@@ -71,7 +72,7 @@ export default function PassportPhotoPage() {
       if (!blob) return
       const a = document.createElement('a')
       a.href = URL.createObjectURL(blob)
-      a.download = `utilityhub-photo-${W}x${H}.jpg`
+      a.download = `workgate-photo-${W}x${H}.jpg`
       a.click()
     }, 'image/jpeg', 0.92)
   }
@@ -90,6 +91,7 @@ export default function PassportPhotoPage() {
       title="Passport & Application Photo Maker"
       description="Choose the type of photo you need, upload your image, and download the resized result."
     >
+      <TokenGate slug="passport-photo">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-4">
         <div>
           <div className="card p-5 mb-4">
@@ -212,6 +214,7 @@ export default function PassportPhotoPage() {
           </div>
         </aside>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }
