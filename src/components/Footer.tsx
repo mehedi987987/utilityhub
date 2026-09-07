@@ -21,10 +21,10 @@ export default function Footer() {
         </div>
         <div>
           <h3 className="text-sm text-white font-semibold mb-3">Categories</h3>
-          <Link href="/#categories" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Education</Link>
-          <Link href="/#categories" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Islamic</Link>
-          <Link href="/#categories" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Calculators</Link>
-          <Link href="/#categories" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Image Tools</Link>
+          <Link href="/#education" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Education</Link>
+          <Link href="/#islamic" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Islamic</Link>
+          <Link href="/#calculators" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Calculators</Link>
+          <Link href="/#images" className="block text-xs py-1.5 text-gray-500 hover:text-blue-400 transition">Image Tools</Link>
         </div>
         <div>
           <h3 className="text-sm text-white font-semibold mb-3">Company</h3>
@@ -34,7 +34,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="max-w-[1200px] mx-auto px-4 mt-8 pt-6 border-t border-white/5">
-        <p className="text-xs text-gray-600 text-center">© 2024 UtilityHub. All rights reserved.</p>
+        <p className="text-xs text-gray-600 text-center">© {new Date().getFullYear()} UtilityHub. All rights reserved.</p>
       </div>
     </footer>
   )

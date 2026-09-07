@@ -6,13 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "firebase": "^10.14.1",
     "jspdf": "^4.2.1",
-    "next": "14.2.15",
-    "next-auth": "^4.24.8",
+    "next": "^14.2.35",
     "pdfjs-dist": "^6.2.108",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
@@ -22,8 +21,11 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3"
-  }
+  },
+  "description": "27 free online tools \u2014 image editing, file conversion and everyday calculators."
 }

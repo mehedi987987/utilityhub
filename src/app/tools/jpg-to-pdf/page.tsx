@@ -1,10 +1,12 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import ErrorBanner from '@/components/ErrorBanner'
 
 export default function JpgToPdfPage() {
   const [images, setImages] = useState<{ src: string; name: string }[]>([])
   const [processing, setProcessing] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   const handleFiles = (files: FileList) => {
@@ -32,6 +34,7 @@ export default function JpgToPdfPage() {
 
   const handleConvert = async () => {
     if (images.length === 0) return
+    setError(null)
     setProcessing(true)
 
     try {
@@ -55,9 +58,11 @@ export default function JpgToPdfPage() {
 
       pdf.save('utilityhub-images.pdf')
     } catch (err) {
-      console.error('PDF error:', err)
-      // Fallback
-      alert('PDF generation failed. Please try with smaller images.')
+      setError(
+        err instanceof Error
+          ? `PDF generation failed: ${err.message}`
+          : 'PDF generation failed. Please try with smaller images.'
+      )
     }
 
     setProcessing(false)
@@ -75,6 +80,7 @@ export default function JpgToPdfPage() {
   return (
     <ToolLayout title="JPG to PDF" icon="📄" description="Convert images to PDF.">
       <div className="max-w-3xl mx-auto">
+        <ErrorBanner message={error} onDismiss={() => setError(null)} />
         <div className="card p-5 mb-4">
           <div
             className="upload-area min-h-[150px] flex items-center justify-center text-center cursor-pointer"

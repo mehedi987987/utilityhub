@@ -20,22 +20,6 @@ export default function FaceBeautyPage() {
     reddenLips: 0,
   })
 
-  const handleFile = useCallback((f: File) => {
-    if (!f.type.startsWith('image/')) return
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string
-      setOriginal(dataUrl)
-      setPreview(null)
-      const img = new window.Image()
-      img.onload = () => {
-        imgRef.current = img
-        applyEffects(img, settings)
-      }
-      img.src = dataUrl
-    }
-    reader.readAsDataURL(f)
-  }, [settings])
 
   const applyEffects = useCallback((img: HTMLImageElement, s: typeof settings) => {
     setProcessing(true)
@@ -138,6 +122,23 @@ export default function FaceBeautyPage() {
       setProgress('Done!')
     }, 100)
   }, [])
+
+  const handleFile = useCallback((f: File) => {
+    if (!f.type.startsWith('image/')) return
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string
+      setOriginal(dataUrl)
+      setPreview(null)
+      const img = new window.Image()
+      img.onload = () => {
+        imgRef.current = img
+        applyEffects(img, settings)
+      }
+      img.src = dataUrl
+    }
+    reader.readAsDataURL(f)
+  }, [settings, applyEffects])
 
   const handleSettingChange = (key: keyof typeof settings, value: number) => {
     const newSettings = { ...settings, [key]: value }
@@ -288,7 +289,7 @@ export default function FaceBeautyPage() {
             <ul className="text-xs text-gray-400 space-y-2">
               <li>• Use a clear, well-lit face photo</li>
               <li>• Face should be clearly visible</li>
-              <li>• Start with "Natural" preset</li>
+              <li>• Start with &quot;Natural&quot; preset</li>
               <li>• Adjust sliders gradually</li>
             </ul>
           </div>
