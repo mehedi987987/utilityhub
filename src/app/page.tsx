@@ -2,6 +2,8 @@
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { categories, tools, TOOL_COUNT, type CategoryId } from '@/lib/toolCatalog'
+import FaqAccordion from '@/components/FaqAccordion'
+import { topFaqs, faqItems } from '@/lib/faqData'
 
 const badgeStyles: Record<string, string> = {
   'Most Popular': 'bg-violet-500/15 text-violet-300 border border-violet-500/25',
@@ -196,7 +198,7 @@ export default function Home() {
         </section>
 
         {/* ---------------- Why Work Gate ---------------- */}
-        <section className="pb-16">
+        <section className="pb-12">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { icon: '🔒', title: 'Private by default', desc: 'Files are processed in your browser' },
@@ -210,6 +212,28 @@ export default function Home() {
                 <p className="text-xs text-gray-500 mt-1 leading-relaxed">{f.desc}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* ---------------- FAQ ---------------- */}
+        <section className="pb-16" id="faq">
+          <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8 lg:gap-12">
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-3">
+                Questions? <span className="headline-gradient">Answered.</span>
+              </h2>
+              <p className="text-sm text-gray-400 leading-relaxed mb-5">
+                The things people ask most before trusting a free tool with their files.
+              </p>
+              <Link
+                href="/faq"
+                className="text-sm font-semibold text-violet-300 hover:text-violet-200 inline-flex items-center gap-1.5 group"
+              >
+                Read all {faqItems.length} questions
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </Link>
+            </div>
+            <FaqAccordion items={topFaqs} defaultOpen={0} />
           </div>
         </section>
       </div>

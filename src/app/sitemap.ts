@@ -10,7 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${base}${path}`,
       lastModified,
       changeFrequency: 'monthly' as const,
-      priority: path === '/' ? 1 : 0.5,
+      priority: path === '/' ? 1 : path === '/faq' ? 0.7 : 0.5,
     })),
     ...TOOL_SLUGS.map((slug) => ({
       url: `${base}/tools/${slug}`,

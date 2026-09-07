@@ -11,7 +11,9 @@ export default function ContactPage() {
     <div className="max-w-[800px] mx-auto px-4 py-12">
       <h1 className="text-3xl font-extrabold tracking-tight text-white mb-3">Contact</h1>
       <p className="text-sm text-gray-400 mb-8">
-        Found a bug, or want a tool that is not here yet? We would like to hear about it.
+        Found a bug, or want a tool that is not here yet? We would like to hear about it — but
+        check the <Link href="/faq" className="text-violet-300 hover:text-violet-200 font-medium">FAQ</Link> first,
+        it may already be answered there.
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

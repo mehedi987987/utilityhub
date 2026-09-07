@@ -127,6 +127,12 @@ export default function Header() {
               All Tools
             </Link>
             <Link
+              href="/faq"
+              className="hidden md:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
+            >
+              FAQ
+            </Link>
+            <Link
               href="/about"
               className="hidden md:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
             >
@@ -176,6 +182,7 @@ export default function Header() {
               {[
                 { href: '/', icon: '🏠', label: 'Home' },
                 { href: '/#tools', icon: '🛠️', label: 'All Tools' },
+                { href: '/faq', icon: '❓', label: 'FAQ' },
                 { href: '/about', icon: 'ℹ️', label: 'About' },
               ].map((l) => (
                 <Link

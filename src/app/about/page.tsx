@@ -33,6 +33,7 @@ export default function AboutPage() {
 
       <div className="mt-6 flex flex-wrap gap-3">
         <Link href="/#tools" className="btn-primary inline-flex items-center gap-2">🛠️ Browse tools</Link>
+        <Link href="/faq" className="btn-secondary inline-flex items-center gap-2">❓ Read the FAQ</Link>
         <Link href="/contact" className="btn-secondary inline-flex items-center gap-2">✉️ Contact us</Link>
       </div>
     </div>
