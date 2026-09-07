@@ -2,21 +2,21 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'About — UtilityHub',
-  description: 'UtilityHub is a free collection of everyday online tools for images, files, grades and calculations.',
+  title: 'About — Work Gate',
+  description: 'Work Gate is a free collection of everyday online tools for images, files, grades and calculations.',
 }
 
 export default function AboutPage() {
   return (
     <div className="max-w-[800px] mx-auto px-4 py-12">
-      <h1 className="text-3xl font-extrabold tracking-tight text-white mb-3">About UtilityHub</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight text-white mb-3">About Work Gate</h1>
       <p className="text-sm text-gray-400 mb-8">
         Simple, free tools that do one job well — no signup, no clutter.
       </p>
 
       <div className="card p-6 space-y-4 text-sm text-gray-400 leading-relaxed">
         <p>
-          UtilityHub bundles the small utilities people in Bangladesh actually need day to day:
+          Work Gate bundles the small utilities people in Bangladesh actually need day to day:
           preparing passport-size photos for application forms, resizing an image to fit an upload
           limit, converting a PDF to images, calculating an SSC or HSC GPA, and working out Zakat.
         </p>

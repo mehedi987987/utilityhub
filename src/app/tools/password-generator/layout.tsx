@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Generate strong, random passwords with the options you need.',
   alternates: { canonical: '/tools/password-generator' },
   openGraph: {
-    title: 'Password Generator — UtilityHub',
+    title: 'Password Generator — Work Gate',
     description: 'Generate strong, random passwords with the options you need.',
     url: '/tools/password-generator',
   },

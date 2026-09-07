@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Combine JPG and PNG images into a single PDF document.',
   alternates: { canonical: '/tools/jpg-to-pdf' },
   openGraph: {
-    title: 'JPG to PDF — UtilityHub',
+    title: 'JPG to PDF — Work Gate',
     description: 'Combine JPG and PNG images into a single PDF document.',
     url: '/tools/jpg-to-pdf',
   },

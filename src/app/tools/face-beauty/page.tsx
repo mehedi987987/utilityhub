@@ -171,7 +171,7 @@ export default function FaceBeautyPage() {
     if (!preview) return
     const a = document.createElement('a')
     a.href = preview
-    a.download = 'utilityhub-face-beauty.jpg'
+    a.download = 'workgate-face-beauty.jpg'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

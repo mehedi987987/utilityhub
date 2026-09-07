@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Count down to any date and time with a live timer.',
   alternates: { canonical: '/tools/countdown' },
   openGraph: {
-    title: 'Countdown Timer — UtilityHub',
+    title: 'Countdown Timer — Work Gate',
     description: 'Count down to any date and time with a live timer.',
     url: '/tools/countdown',
   },

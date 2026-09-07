@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Resize any image to exact pixel dimensions without losing quality.',
   alternates: { canonical: '/tools/image-resizer' },
   openGraph: {
-    title: 'Image Resizer — UtilityHub',
+    title: 'Image Resizer — Work Gate',
     description: 'Resize any image to exact pixel dimensions without losing quality.',
     url: '/tools/image-resizer',
   },

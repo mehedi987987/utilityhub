@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Interactive SSC English grammar book with solved exercises.',
   alternates: { canonical: '/tools/ssc-grammar' },
   openGraph: {
-    title: 'SSC Grammar Solution — UtilityHub',
+    title: 'SSC Grammar Solution — Work Gate',
     description: 'Interactive SSC English grammar book with solved exercises.',
     url: '/tools/ssc-grammar',
   },

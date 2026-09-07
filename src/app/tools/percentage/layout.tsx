@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Quick percentage increase, decrease and of-value calculations.',
   alternates: { canonical: '/tools/percentage' },
   openGraph: {
-    title: 'Percentage Calculator — UtilityHub',
+    title: 'Percentage Calculator — Work Gate',
     description: 'Quick percentage increase, decrease and of-value calculations.',
     url: '/tools/percentage',
   },

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Calculate Zakat due on cash, gold, silver and business assets.',
   alternates: { canonical: '/tools/zakat' },
   openGraph: {
-    title: 'Zakat Calculator — UtilityHub',
+    title: 'Zakat Calculator — Work Gate',
     description: 'Calculate Zakat due on cash, gold, silver and business assets.',
     url: '/tools/zakat',
   },

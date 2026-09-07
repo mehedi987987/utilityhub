@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Convert between Gregorian and Hijri calendar dates.',
   alternates: { canonical: '/tools/islamic-date' },
   openGraph: {
-    title: 'Islamic Date Converter — UtilityHub',
+    title: 'Islamic Date Converter — Work Gate',
     description: 'Convert between Gregorian and Hijri calendar dates.',
     url: '/tools/islamic-date',
   },

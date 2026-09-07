@@ -4,18 +4,20 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getSiteUrl } from '@/lib/tools'
 
-const title = 'UtilityHub — Free Online Tools'
+const title = 'Work Gate — Every tool you need, one gate to work'
 const description =
-  '27 free tools for everyday work. Resize photos, remove backgrounds, prepare passport images, calculate GPA and Zakat, and convert files — no signup required.'
+  '27 free online tools for everyday work. Resize photos, remove backgrounds, make passport images, convert PDFs, and calculate GPA, EMI and Zakat — no signup, files stay in your browser.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
     default: title,
-    template: '%s — UtilityHub',
+    template: '%s — Work Gate',
   },
   description,
-  applicationName: 'UtilityHub',
+  applicationName: 'Work Gate',
+  authors: [{ name: 'Work Gate' }],
+  creator: 'Work Gate',
   keywords: [
     'free online tools',
     'passport photo maker',
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
   ],
   openGraph: {
     type: 'website',
-    siteName: 'UtilityHub',
+    siteName: 'Work Gate',
     title,
     description,
     url: '/',
@@ -46,6 +48,7 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: '#0a0a0f',
+  colorScheme: 'dark',
   width: 'device-width',
   initialScale: 1,
 }

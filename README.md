@@ -1,4 +1,4 @@
-# UtilityHub
+# Work Gate
 
 A collection of 27 free, no-signup online tools — image editing, file conversion,
 GPA and Zakat calculators, and everyday utilities. Built with Next.js 14 (App Router),
@@ -40,7 +40,7 @@ All of these are optional. Without them the AI-backed tools return a clear
 | `CLIPDROP_API_KEY` | Image Enhancer (AI) | Tried first |
 | `DEEPAI_API_KEY` | Image Enhancer (AI) | Fallback |
 | `PIXELCUT_API_KEY` | Image Enhancer (AI) | Fallback |
-| `NEXT_PUBLIC_SITE_URL` | `sitemap.xml`, `robots.txt`, canonical URLs | e.g. `https://utilityhub.example.com` |
+| `NEXT_PUBLIC_SITE_URL` | `sitemap.xml`, `robots.txt`, canonical URLs | e.g. `https://workgate.example.com` |
 
 These are read on the server only. Never put a secret in a `NEXT_PUBLIC_*` variable.
 

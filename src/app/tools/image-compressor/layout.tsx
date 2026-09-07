@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Reduce image file size while keeping it looking sharp.',
   alternates: { canonical: '/tools/image-compressor' },
   openGraph: {
-    title: 'Image Compressor — UtilityHub',
+    title: 'Image Compressor — Work Gate',
     description: 'Reduce image file size while keeping it looking sharp.',
     url: '/tools/image-compressor',
   },

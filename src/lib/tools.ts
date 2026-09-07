@@ -1,32 +1,7 @@
-export const TOOL_SLUGS = [
-  'passport-photo',
-  'remove-bg',
-  'face-beauty',
-  'image-enhancer',
-  'ssc-grammar',
-  'qr-generator',
-  'password-generator',
-  'word-counter',
-  'color-picker',
-  'bmi-calculator',
-  'loan-calculator',
-  'image-resizer',
-  'image-compressor',
-  'image-size',
-  'signature-maker',
-  'jpg-to-pdf',
-  'pdf-to-jpg',
-  'ssc-gpa',
-  'hsc-gpa',
-  'cgpa',
-  'islamic-date',
-  'zakat',
-  'percentage',
-  'age',
-  'date-diff',
-  'countdown',
-  'holidays',
-] as const
+import { tools } from './toolCatalog'
+
+/** Every tool slug, derived from the single source of truth in toolCatalog. */
+export const TOOL_SLUGS = tools.map((t) => t.slug)
 
 export const STATIC_PATHS = ['/', '/about', '/privacy', '/contact'] as const
 

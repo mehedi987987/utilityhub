@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Count words, characters, sentences and reading time instantly.',
   alternates: { canonical: '/tools/word-counter' },
   openGraph: {
-    title: 'Word Counter — UtilityHub',
+    title: 'Word Counter — Work Gate',
     description: 'Count words, characters, sentences and reading time instantly.',
     url: '/tools/word-counter',
   },

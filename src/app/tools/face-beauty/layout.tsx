@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Retouch portraits with smoothing, brightening and tone presets.',
   alternates: { canonical: '/tools/face-beauty' },
   openGraph: {
-    title: 'Face Beauty — UtilityHub',
+    title: 'Face Beauty — Work Gate',
     description: 'Retouch portraits with smoothing, brightening and tone presets.',
     url: '/tools/face-beauty',
   },

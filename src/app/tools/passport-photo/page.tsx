@@ -71,7 +71,7 @@ export default function PassportPhotoPage() {
       if (!blob) return
       const a = document.createElement('a')
       a.href = URL.createObjectURL(blob)
-      a.download = `utilityhub-photo-${W}x${H}.jpg`
+      a.download = `workgate-photo-${W}x${H}.jpg`
       a.click()
     }, 'image/jpeg', 0.92)
   }

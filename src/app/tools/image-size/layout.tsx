@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Set custom image dimensions and target file size for form uploads.',
   alternates: { canonical: '/tools/image-size' },
   openGraph: {
-    title: 'Image Size Maker — UtilityHub',
+    title: 'Image Size Maker — Work Gate',
     description: 'Set custom image dimensions and target file size for form uploads.',
     url: '/tools/image-size',
   },

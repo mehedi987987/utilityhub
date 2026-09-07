@@ -133,7 +133,7 @@ export default function RemoveBgPage() {
     if (!preview) return
     const a = document.createElement('a')
     a.href = preview
-    a.download = 'utilityhub-photo.png'
+    a.download = 'workgate-photo.png'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

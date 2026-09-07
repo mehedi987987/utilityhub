@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Convert every page of a PDF into downloadable JPG images.',
   alternates: { canonical: '/tools/pdf-to-jpg' },
   openGraph: {
-    title: 'PDF to JPG — UtilityHub',
+    title: 'PDF to JPG — Work Gate',
     description: 'Convert every page of a PDF into downloadable JPG images.',
     url: '/tools/pdf-to-jpg',
   },

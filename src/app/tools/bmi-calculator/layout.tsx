@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Calculate your Body Mass Index and see the healthy range.',
   alternates: { canonical: '/tools/bmi-calculator' },
   openGraph: {
-    title: 'BMI Calculator — UtilityHub',
+    title: 'BMI Calculator — Work Gate',
     description: 'Calculate your Body Mass Index and see the healthy range.',
     url: '/tools/bmi-calculator',
   },

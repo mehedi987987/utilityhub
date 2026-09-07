@@ -34,7 +34,7 @@ export default function QRGeneratorPage() {
     if (!canvas) return
     const a = document.createElement('a')
     a.href = canvas.toDataURL('image/png')
-    a.download = 'utilityhub-qr-code.png'
+    a.download = 'workgate-qr-code.png'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

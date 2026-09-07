@@ -1,14 +1,14 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — UtilityHub',
-  description: 'How UtilityHub handles your files and data. Most tools run entirely in your browser.',
+  title: 'Privacy Policy — Work Gate',
+  description: 'How Work Gate handles your files and data. Most tools run entirely in your browser.',
 }
 
 const sections = [
   {
     title: 'Files you upload',
-    body: 'Most UtilityHub tools — image resizing, compression, JPG to PDF, PDF to JPG, passport photos, signatures, and every calculator — run completely inside your browser using JavaScript and the Canvas API. Those files never leave your device and are never sent to our servers.',
+    body: 'Most Work Gate tools — image resizing, compression, JPG to PDF, PDF to JPG, passport photos, signatures, and every calculator — run completely inside your browser using JavaScript and the Canvas API. Those files never leave your device and are never sent to our servers.',
   },
   {
     title: 'Tools that use third-party services',
@@ -16,7 +16,7 @@ const sections = [
   },
   {
     title: 'Accounts and personal data',
-    body: 'UtilityHub has no user accounts. We do not ask for your name, email address, or phone number, and we do not build a profile about you.',
+    body: 'Work Gate has no user accounts. We do not ask for your name, email address, or phone number, and we do not build a profile about you.',
   },
   {
     title: 'Cookies and analytics',

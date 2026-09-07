@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Create passport size photos in standard sizes, right in your browser.',
   alternates: { canonical: '/tools/passport-photo' },
   openGraph: {
-    title: 'Passport Photo Maker — UtilityHub',
+    title: 'Passport Photo Maker — Work Gate',
     description: 'Create passport size photos in standard sizes, right in your browser.',
     url: '/tools/passport-photo',
   },

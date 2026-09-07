@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Contact — UtilityHub',
-  description: 'Get in touch with the UtilityHub team about bugs, tool requests, or feedback.',
+  title: 'Contact — Work Gate',
+  description: 'Get in touch with the Work Gate team about bugs, tool requests, or feedback.',
 }
 
 export default function ContactPage() {

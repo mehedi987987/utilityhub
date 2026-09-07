@@ -201,7 +201,7 @@ export default function ImageEnhancerPage() {
     if (!preview) return
     const a = document.createElement('a')
     a.href = preview
-    a.download = 'utilityhub-enhanced.jpg'
+    a.download = 'workgate-enhanced.jpg'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)

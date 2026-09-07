@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Calculate semester and cumulative CGPA from your course grades.',
   alternates: { canonical: '/tools/cgpa' },
   openGraph: {
-    title: 'University CGPA Calculator — UtilityHub',
+    title: 'University CGPA Calculator — Work Gate',
     description: 'Calculate semester and cumulative CGPA from your course grades.',
     url: '/tools/cgpa',
   },

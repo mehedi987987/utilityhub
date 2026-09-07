@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Calculate your SSC GPA from subject grades under the Bangladesh system.',
   alternates: { canonical: '/tools/ssc-gpa' },
   openGraph: {
-    title: 'SSC GPA Calculator — UtilityHub',
+    title: 'SSC GPA Calculator — Work Gate',
     description: 'Calculate your SSC GPA from subject grades under the Bangladesh system.',
     url: '/tools/ssc-gpa',
   },

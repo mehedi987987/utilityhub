@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Generate a custom QR code for links, text, Wi-Fi and more.',
   alternates: { canonical: '/tools/qr-generator' },
   openGraph: {
-    title: 'QR Code Generator — UtilityHub',
+    title: 'QR Code Generator — Work Gate',
     description: 'Generate a custom QR code for links, text, Wi-Fi and more.',
     url: '/tools/qr-generator',
   },

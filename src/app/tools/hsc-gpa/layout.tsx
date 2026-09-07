@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Calculate your HSC GPA from subject grades under the Bangladesh system.',
   alternates: { canonical: '/tools/hsc-gpa' },
   openGraph: {
-    title: 'HSC GPA Calculator — UtilityHub',
+    title: 'HSC GPA Calculator — Work Gate',
     description: 'Calculate your HSC GPA from subject grades under the Bangladesh system.',
     url: '/tools/hsc-gpa',
   },

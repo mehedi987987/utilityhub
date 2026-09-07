@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Work out monthly EMI, total interest and repayment for any loan.',
   alternates: { canonical: '/tools/loan-calculator' },
   openGraph: {
-    title: 'Loan EMI Calculator — UtilityHub',
+    title: 'Loan EMI Calculator — Work Gate',
     description: 'Work out monthly EMI, total interest and repayment for any loan.',
     url: '/tools/loan-calculator',
   },

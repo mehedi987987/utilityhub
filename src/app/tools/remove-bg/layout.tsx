@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Remove an image background and replace it with a colour or your own photo.',
   alternates: { canonical: '/tools/remove-bg' },
   openGraph: {
-    title: 'Remove Background — UtilityHub',
+    title: 'Remove Background — Work Gate',
     description: 'Remove an image background and replace it with a colour or your own photo.',
     url: '/tools/remove-bg',
   },

@@ -56,7 +56,7 @@ export default function JpgToPdfPage() {
         pdf.addImage(images[i].src, 'JPEG', x, y, w, h)
       }
 
-      pdf.save('utilityhub-images.pdf')
+      pdf.save('workgate-images.pdf')
     } catch (err) {
       setError(
         err instanceof Error

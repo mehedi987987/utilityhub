@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Full list of Bangladesh government public holidays.',
   alternates: { canonical: '/tools/holidays' },
   openGraph: {
-    title: 'Bangladesh Public Holidays — UtilityHub',
+    title: 'Bangladesh Public Holidays — Work Gate',
     description: 'Full list of Bangladesh government public holidays.',
     url: '/tools/holidays',
   },

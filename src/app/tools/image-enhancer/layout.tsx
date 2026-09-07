@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   description: 'Improve photo quality with manual adjustments or AI upscaling.',
   alternates: { canonical: '/tools/image-enhancer' },
   openGraph: {
-    title: 'Image Enhancer — UtilityHub',
+    title: 'Image Enhancer — Work Gate',
     description: 'Improve photo quality with manual adjustments or AI upscaling.',
     url: '/tools/image-enhancer',
   },
