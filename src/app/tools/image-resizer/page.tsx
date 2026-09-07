@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function ImageResizerPage() {
   const [preview, setPreview] = useState<string | null>(null)
@@ -86,6 +87,7 @@ export default function ImageResizerPage() {
 
   return (
     <ToolLayout title="Image Resizer" description="Resize any image to your desired dimensions. Lock aspect ratio to maintain proportions.">
+      <TokenGate slug="image-resizer">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-4">
         <div>
           <div className="card p-5 mb-4">
@@ -154,6 +156,7 @@ export default function ImageResizerPage() {
           </ul>
         </aside>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

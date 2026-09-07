@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function PdfToJpgPage() {
   const [fileName, setFileName] = useState('')
@@ -73,6 +74,7 @@ export default function PdfToJpgPage() {
 
   return (
     <ToolLayout title="PDF to JPG" icon="🖼️" description="Convert PDF pages to JPG images.">
+      <TokenGate slug="pdf-to-jpg">
       <div className="max-w-3xl mx-auto">
         <div className="card p-5 mb-4">
           <div
@@ -126,6 +128,7 @@ export default function PdfToJpgPage() {
           </>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

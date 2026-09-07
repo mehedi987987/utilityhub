@@ -56,6 +56,7 @@ export default function Footer() {
           <h3 className="text-sm text-white font-semibold mb-3">Company</h3>
           <Link href="/about" className="block text-xs py-1.5 text-gray-500 hover:text-violet-300 transition">About</Link>
           <Link href="/faq" className="block text-xs py-1.5 text-gray-500 hover:text-violet-300 transition">FAQ</Link>
+          <Link href="/earn-tokens" className="block text-xs py-1.5 text-gray-500 hover:text-violet-300 transition">Earn Tokens</Link>
           <Link href="/privacy" className="block text-xs py-1.5 text-gray-500 hover:text-violet-300 transition">Privacy</Link>
           <Link href="/contact" className="block text-xs py-1.5 text-gray-500 hover:text-violet-300 transition">Contact</Link>
         </div>

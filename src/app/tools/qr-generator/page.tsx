@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function QRGeneratorPage() {
   const [text, setText] = useState('https://')
@@ -42,6 +43,7 @@ export default function QRGeneratorPage() {
 
   return (
     <ToolLayout title="QR Code Generator" icon="🔲" description="Generate QR codes for URLs, text, WiFi, and more.">
+      <TokenGate slug="qr-generator">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-6">
         <div>
           <div className="card p-5 mb-4">
@@ -122,6 +124,7 @@ export default function QRGeneratorPage() {
           </div>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function WordCounterPage() {
   const [text, setText] = useState('')
@@ -18,6 +19,7 @@ export default function WordCounterPage() {
 
   return (
     <ToolLayout title="Word Counter" icon="📝" description="Count words, characters, sentences, and more.">
+      <TokenGate slug="word-counter">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
         <div>
           <div className="card p-5">
@@ -60,6 +62,7 @@ export default function WordCounterPage() {
           </div>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

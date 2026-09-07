@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 interface Semester { name: string; gpa: string; credits: string }
 
@@ -40,6 +41,7 @@ export default function CGPAPage() {
 
   return (
     <ToolLayout title="University CGPA Calculator" description="Calculate your cumulative GPA across multiple semesters.">
+      <TokenGate slug="cgpa">
       <div className="max-w-2xl mx-auto">
         <div className="card p-5 mb-4">
           <h2 className="text-sm font-bold mb-4">Enter semester details</h2>
@@ -73,6 +75,7 @@ export default function CGPAPage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

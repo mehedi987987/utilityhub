@@ -3,6 +3,7 @@ import './globals.css'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { getSiteUrl } from '@/lib/tools'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 const title = 'Work Gate — Every tool you need, one gate to work'
 const description =
@@ -63,9 +64,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
-        <Header />
-        <main id="main">{children}</main>
-        <Footer />
+        <AuthProvider>
+          <Header />
+          <main id="main">{children}</main>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef, useCallback } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 import BeforeAfter from '@/components/BeforeAfter'
 
 export default function FaceBeautyPage() {
@@ -188,6 +189,7 @@ export default function FaceBeautyPage() {
 
   return (
     <ToolLayout title="Face Beauty" icon="💄" description="AI-powered face beautification - smooth skin, whiten, remove blemishes, and more.">
+      <TokenGate slug="face-beauty">
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Preview Area */}
         <div>
@@ -287,6 +289,7 @@ export default function FaceBeautyPage() {
           </div>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef, useCallback } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 import BeforeAfter from '@/components/BeforeAfter'
 import ErrorBanner from '@/components/ErrorBanner'
 
@@ -218,6 +219,7 @@ export default function ImageEnhancerPage() {
 
   return (
     <ToolLayout title="Image Enhancer" icon="✨" description="Improve your photos with manual adjustments or AI-powered enhancement.">
+      <TokenGate slug="image-enhancer">
       <ErrorBanner message={error} onDismiss={() => setError(null)} />
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
         {/* Preview Area */}
@@ -359,6 +361,7 @@ export default function ImageEnhancerPage() {
           )}
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

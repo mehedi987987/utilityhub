@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 const gradePoints: Record<string, number> = {
   'A+': 5.0, 'A': 4.0, 'A-': 3.5, 'B': 3.0, 'B-': 2.5, 'C': 2.0, 'D': 1.0, 'F': 0,
@@ -33,6 +34,7 @@ export default function HSCGPAPage() {
 
   return (
     <ToolLayout title="HSC GPA Calculator" description="Calculate your HSC GPA based on the Bangladesh education grading system.">
+      <TokenGate slug="hsc-gpa">
       <div className="max-w-2xl mx-auto">
         <div className="card p-5 mb-4">
           <h2 className="text-sm font-bold mb-4">Enter your grades</h2>
@@ -62,6 +64,7 @@ export default function HSCGPAPage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

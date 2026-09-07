@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function ImageSizePage() {
   const [preview, setPreview] = useState<string | null>(null)
@@ -59,6 +60,7 @@ export default function ImageSizePage() {
 
   return (
     <ToolLayout title="Image Size Maker" description="Set custom width and height for your image. Fits the image within the canvas with background color.">
+      <TokenGate slug="image-size">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <div
@@ -113,6 +115,7 @@ export default function ImageSizePage() {
             className="flex-1 bg-blue text-white py-3 rounded-xl text-sm font-bold disabled:opacity-40">Download</button>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

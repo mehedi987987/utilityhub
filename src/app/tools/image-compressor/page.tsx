@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function ImageCompressorPage() {
   const [preview, setPreview] = useState<string | null>(null)
@@ -70,6 +71,7 @@ export default function ImageCompressorPage() {
 
   return (
     <ToolLayout title="Image Compressor" description="Reduce image file size while maintaining quality. Perfect for web uploads and email.">
+      <TokenGate slug="image-compressor">
       <div className="max-w-2xl mx-auto">
         <div className="card p-5 mb-4">
           <div
@@ -128,6 +130,7 @@ export default function ImageCompressorPage() {
           </>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

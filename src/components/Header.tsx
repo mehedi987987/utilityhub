@@ -3,9 +3,14 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { tools, TOOL_COUNT } from '@/lib/toolCatalog'
+import { useAuth } from '@/contexts/AuthContext'
+import TokenBalance from '@/components/TokenBalance'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [acctOpen, setAcctOpen] = useState(false)
+  const { user, logout } = useAuth()
+  const acctRef = useRef<HTMLDivElement>(null)
   const [query, setQuery] = useState('')
   const [open, setOpen] = useState(false)
   const router = useRouter()
@@ -17,6 +22,7 @@ export default function Header() {
   useEffect(() => {
     setMenuOpen(false)
     setOpen(false)
+    setAcctOpen(false)
     setQuery('')
   }, [pathname])
 
@@ -37,6 +43,7 @@ export default function Header() {
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false)
+      if (acctRef.current && !acctRef.current.contains(e.target as Node)) setAcctOpen(false)
     }
     document.addEventListener('mousedown', onClick)
     return () => document.removeEventListener('mousedown', onClick)
@@ -122,22 +129,69 @@ export default function Header() {
           <div className="flex items-center gap-2 ml-auto">
             <Link
               href="/#tools"
-              className="hidden md:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
+              className="hidden lg:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
             >
               All Tools
             </Link>
             <Link
               href="/faq"
-              className="hidden md:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
+              className="hidden lg:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
             >
               FAQ
             </Link>
             <Link
               href="/about"
-              className="hidden md:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
+              className="hidden lg:inline-flex text-sm text-gray-400 px-3 py-2 rounded-lg hover:text-white hover:bg-white/5 font-medium transition"
             >
               About
             </Link>
+
+            {user ? (
+              <>
+                <span className="hidden sm:inline-flex"><TokenBalance /></span>
+                <div ref={acctRef} className="relative">
+                  <button
+                    onClick={() => setAcctOpen((v) => !v)}
+                    className="avatar-btn"
+                    aria-haspopup="menu"
+                    aria-expanded={acctOpen}
+                    aria-label="Account menu"
+                  >
+                    {(user.displayName || user.email).charAt(0).toUpperCase()}
+                  </button>
+
+                  {acctOpen && (
+                    <div className="account-menu card" role="menu">
+                      <div className="px-3 py-2.5 border-b border-white/5 mb-1">
+                        <p className="text-sm font-semibold text-white truncate">{user.displayName}</p>
+                        <p className="text-[11px] text-gray-500 truncate">{user.email}</p>
+                      </div>
+                      <Link href="/account" className="account-menu-item" role="menuitem">
+                        <span aria-hidden="true">👤</span> My account
+                      </Link>
+                      <Link href="/earn-tokens" className="account-menu-item" role="menuitem">
+                        <span aria-hidden="true">🎁</span> Earn tokens
+                      </Link>
+                      <Link href="/faq" className="account-menu-item" role="menuitem">
+                        <span aria-hidden="true">❓</span> Help
+                      </Link>
+                      <button
+                        onClick={() => { logout(); setAcctOpen(false); router.push('/') }}
+                        className="account-menu-item"
+                        role="menuitem"
+                      >
+                        <span aria-hidden="true">🚪</span> Sign out
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <Link href="/login" className="hidden sm:inline-flex btn-primary !py-2 !px-4 !text-sm">
+                Sign in
+              </Link>
+            )}
+
             <button
               className="md:hidden w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1.5 hover:bg-white/10 transition"
               onClick={() => setMenuOpen(true)}
@@ -176,6 +230,40 @@ export default function Header() {
               >
                 ✕
               </button>
+            </div>
+
+            {/* Account block */}
+            <div className="p-4 border-b border-white/10">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="avatar-btn !w-10 !h-10 !text-sm">
+                      {(user.displayName || user.email).charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white truncate">{user.displayName}</p>
+                      <p className="text-[11px] text-gray-500 truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Link href="/account" onClick={() => setMenuOpen(false)} className="btn-secondary flex-1 !py-2 !text-xs text-center">
+                      Account
+                    </Link>
+                    <Link href="/earn-tokens" onClick={() => setMenuOpen(false)} className="btn-primary flex-1 !py-2 !text-xs text-center">
+                      🪙 {user.tokens}
+                    </Link>
+                  </div>
+                </>
+              ) : (
+                <div className="flex gap-2">
+                  <Link href="/login" onClick={() => setMenuOpen(false)} className="btn-secondary flex-1 !py-2.5 !text-xs text-center">
+                    Sign in
+                  </Link>
+                  <Link href="/signup" onClick={() => setMenuOpen(false)} className="btn-primary flex-1 !py-2.5 !text-xs text-center">
+                    Sign up free
+                  </Link>
+                </div>
+              )}
             </div>
 
             <nav className="p-4">

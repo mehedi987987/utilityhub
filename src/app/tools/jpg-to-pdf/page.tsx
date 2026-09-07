@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 import ErrorBanner from '@/components/ErrorBanner'
 
 export default function JpgToPdfPage() {
@@ -79,6 +80,7 @@ export default function JpgToPdfPage() {
 
   return (
     <ToolLayout title="JPG to PDF" icon="📄" description="Convert images to PDF.">
+      <TokenGate slug="jpg-to-pdf">
       <div className="max-w-3xl mx-auto">
         <ErrorBanner message={error} onDismiss={() => setError(null)} />
         <div className="card p-5 mb-4">
@@ -125,6 +127,7 @@ export default function JpgToPdfPage() {
           </>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

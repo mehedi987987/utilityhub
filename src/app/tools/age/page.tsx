@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function AgePage() {
   const [dob, setDob] = useState('')
@@ -25,6 +26,7 @@ export default function AgePage() {
 
   return (
     <ToolLayout title="Age Calculator" description="Find your exact age in years, months, and days.">
+      <TokenGate slug="age">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <h2 className="text-sm font-bold mb-3">Enter your date of birth</h2>
@@ -60,6 +62,7 @@ export default function AgePage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

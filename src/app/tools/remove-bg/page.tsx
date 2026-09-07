@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 import ErrorBanner from '@/components/ErrorBanner'
 import BeforeAfter from '@/components/BeforeAfter'
 
@@ -156,6 +157,7 @@ export default function RemoveBgPage() {
 
   return (
     <ToolLayout title="Remove & Change Background" icon="✂️" description="Remove background and add new one - solid color, gradient, or custom image.">
+      <TokenGate slug="remove-bg">
       <div className="max-w-4xl mx-auto">
         {/* Upload Area */}
         {step === 'upload' && (
@@ -397,6 +399,7 @@ export default function RemoveBgPage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

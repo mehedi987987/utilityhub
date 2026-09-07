@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function DateDiffPage() {
   const [from, setFrom] = useState('')
@@ -22,6 +23,7 @@ export default function DateDiffPage() {
 
   return (
     <ToolLayout title="Date Difference Calculator" description="Calculate the number of days, weeks, and months between two dates.">
+      <TokenGate slug="date-diff">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <div className="grid grid-cols-2 gap-3 mb-4">
@@ -60,6 +62,7 @@ export default function DateDiffPage() {
           </div>
         )}
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

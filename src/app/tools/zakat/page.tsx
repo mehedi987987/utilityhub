@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function ZakatPage() {
   const [gold, setGold] = useState('')
@@ -24,6 +25,7 @@ export default function ZakatPage() {
 
   return (
     <ToolLayout title="Zakat Calculator" description="Estimate your Zakat obligation based on your total wealth.">
+      <TokenGate slug="zakat">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <h2 className="text-sm font-bold mb-4">Enter your wealth (in BDT)</h2>
@@ -83,6 +85,7 @@ export default function ZakatPage() {
           </p>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

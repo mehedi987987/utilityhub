@@ -1,6 +1,7 @@
 "use client"
 import { useState, useCallback } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function PasswordGeneratorPage() {
   const [password, setPassword] = useState('')
@@ -47,6 +48,7 @@ export default function PasswordGeneratorPage() {
 
   return (
     <ToolLayout title="Password Generator" icon="🔐" description="Generate secure, random passwords with customizable options.">
+      <TokenGate slug="password-generator">
       <div className="max-w-2xl mx-auto">
         <div className="card p-6 mb-4">
           {/* Generated Password */}
@@ -126,6 +128,7 @@ export default function PasswordGeneratorPage() {
           </div>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }

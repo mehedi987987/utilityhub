@@ -44,6 +44,33 @@ export const faqSections: FaqSection[] = [
     ],
   },
   {
+    id: 'tokens',
+    icon: '\u{1FA99}',
+    title: 'Accounts & Tokens',
+    items: [
+      {
+        q: 'Why do I need an account?',
+        a: 'An account lets us keep your token balance and stops a single person from draining the paid AI services. Signing up is free, takes a few seconds and asks only for a name, email and password.',
+      },
+      {
+        q: 'What are tokens?',
+        a: 'Tokens are the free credits that let you run a tool. You get 100 when you sign up, each tool run costs 10, and you can always top up by watching a short ad or claiming the daily bonus.',
+      },
+      {
+        q: 'How do I get more tokens?',
+        a: 'Watch a rewarded ad for 50 tokens, up to ten times a day, or claim 25 free tokens once every 24 hours from the Earn Tokens page. There is nothing to buy.',
+      },
+      {
+        q: 'Do tokens expire?',
+        a: 'No. Your balance stays on your account until you spend it.',
+      },
+      {
+        q: 'Do I have to pay for anything?',
+        a: 'No. Work Gate has no paid plan. Ads cover the cost of the AI services so the tools can stay free.',
+      },
+    ],
+  },
+  {
     id: 'privacy',
     icon: '🔒',
     title: 'Privacy & Security',

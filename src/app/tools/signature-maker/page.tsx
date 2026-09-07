@@ -1,6 +1,7 @@
 "use client"
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
+import TokenGate from '@/components/TokenGate'
 
 export default function SignatureMakerPage() {
   const [preview, setPreview] = useState<string | null>(null)
@@ -58,6 +59,7 @@ export default function SignatureMakerPage() {
 
   return (
     <ToolLayout title="Signature Size Maker" description="Upload your signature image and resize it to application-ready dimensions.">
+      <TokenGate slug="signature-maker">
       <div className="max-w-xl mx-auto">
         <div className="card p-5 mb-4">
           <h2 className="text-sm font-bold mb-3">Upload Signature</h2>
@@ -108,6 +110,7 @@ export default function SignatureMakerPage() {
             className="flex-1 bg-blue text-white py-3 rounded-xl text-sm font-bold disabled:opacity-40">Download</button>
         </div>
       </div>
+          </TokenGate>
     </ToolLayout>
   )
 }
