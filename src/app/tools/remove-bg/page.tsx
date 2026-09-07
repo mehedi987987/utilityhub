@@ -53,6 +53,12 @@ export default function RemoveBgPage() {
 
       if (!response.ok) {
         const data = await response.json().catch(() => ({}))
+        if (response.status === 429) {
+          throw new Error(
+            data.error ||
+              'You have used all your free runs for now. Please try again later.'
+          )
+        }
         throw new Error(data.error || `Request failed (${response.status}).`)
       }
 

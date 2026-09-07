@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { enforceAiRateLimit } from '@/lib/rateLimit'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -72,6 +73,9 @@ const providers: Provider[] = [
 ]
 
 export async function POST(req: NextRequest) {
+  const limit = enforceAiRateLimit(req, 'enhance')
+  if (limit.blocked) return limit.response
+
   const configured = providers.filter((p) => p.key)
   if (configured.length === 0) {
     return NextResponse.json(
@@ -113,12 +117,12 @@ export async function POST(req: NextRequest) {
       const buf = await provider.run(file, provider.key as string, type)
       return new NextResponse(buf, {
         status: 200,
-        headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store' },
+        headers: { 'Content-Type': 'image/png', 'Cache-Control': 'no-store', ...limit.headers },
       })
     } catch (err) {
       lastError = err instanceof Error ? err.message : 'Provider error.'
     }
   }
 
-  return NextResponse.json({ error: lastError }, { status: 502 })
+  return NextResponse.json({ error: lastError }, { status: 502, headers: limit.headers })
 }

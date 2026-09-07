@@ -68,6 +68,22 @@ Banner units are rendered inside sandboxed iframes because Adsterra's snippet
 uses `document.write` and a global `atOptions`, which break React and collide
 when two units share a page.
 
+## Rate limiting
+
+`/api/remove-bg` and `/api/enhance` spend real money at an external provider on
+every call. `TokenGate` on the tool pages only hides UI — a direct `POST` would
+bypass it entirely — so the actual protection lives in `src/lib/rateLimit.ts`
+and runs before any provider request is made.
+
+Defaults are 5 runs per hour and 15 per day per IP, overridable with
+`AI_RATE_LIMIT_HOUR` and `AI_RATE_LIMIT_DAY`. Blocked requests get a 429 with
+`Retry-After` and `X-RateLimit-*` headers.
+
+The counters are in-process, so they reset on deploy and each serverless
+instance keeps its own. That is enough to stop scripted abuse and runaway
+loops; when a real database is added, swap the `Map` for a shared store
+(the database itself or Upstash Redis) and the rest of the module is unchanged.
+
 ## Project structure
 
 ```

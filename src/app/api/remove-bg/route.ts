@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { enforceAiRateLimit } from '@/lib/rateLimit'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -13,6 +14,11 @@ function getKeys(): string[] {
 }
 
 export async function POST(req: NextRequest) {
+  // Rate limit BEFORE doing any work. TokenGate only hides the UI; a direct
+  // POST would otherwise spend provider credits with no check at all.
+  const limit = enforceAiRateLimit(req, 'remove-bg')
+  if (limit.blocked) return limit.response
+
   const keys = getKeys()
   if (keys.length === 0) {
     return NextResponse.json(
@@ -60,6 +66,7 @@ export async function POST(req: NextRequest) {
           headers: {
             'Content-Type': res.headers.get('content-type') || 'image/png',
             'Cache-Control': 'no-store',
+            ...limit.headers,
           },
         })
       }
@@ -69,7 +76,7 @@ export async function POST(req: NextRequest) {
         const text = await res.text()
         return NextResponse.json(
           { error: `Background removal failed (${res.status}).`, detail: text.slice(0, 500) },
-          { status: res.status }
+          { status: res.status, headers: limit.headers }
         )
       }
       lastError = `Key exhausted (${res.status}).`
@@ -78,5 +85,5 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ error: lastError }, { status: 502 })
+  return NextResponse.json({ error: lastError }, { status: 502, headers: limit.headers })
 }

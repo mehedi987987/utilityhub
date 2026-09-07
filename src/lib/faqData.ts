@@ -123,6 +123,10 @@ export const faqSections: FaqSection[] = [
         a: 'JPG, PNG and WebP work everywhere. Remove Background returns a transparent PNG so the cut-out edges stay clean.',
       },
       {
+        q: 'Why was I told I have used all my free runs?',
+        a: 'Remove Background and AI Image Enhancer call a paid service on every run, so they are limited to a few runs per hour and per day from the same connection. This keeps the free service alive for everyone. The message tells you roughly how long to wait.',
+      },
+      {
         q: 'Why did Remove Background say it is not configured?',
         a: 'That tool needs an API key from the background-removal provider set on the server. If you are self-hosting, add REMOVE_BG_API_KEYS to your environment. All the other tools keep working without it.',
       },
