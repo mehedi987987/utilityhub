@@ -2,6 +2,7 @@
 import { useState, useRef } from 'react'
 import ToolLayout from '@/components/ToolLayout'
 import ErrorBanner from '@/components/ErrorBanner'
+import BeforeAfter from '@/components/BeforeAfter'
 
 const PRESET_COLORS = [
   '#FFFFFF', '#000000', '#FF0000', '#00FF00', '#0000FF',
@@ -199,24 +200,29 @@ export default function RemoveBgPage() {
             {/* Preview */}
             <div>
               <div className="card rounded-2xl p-5 mb-4">
-                <div className="grid grid-cols-3 gap-3 mb-3">
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 text-center">Original</p>
-                    <img src={original!} alt="Original" className="w-full h-40 object-contain rounded-xl bg-white/5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 text-center">No Background</p>
-                    <div className="bg-[repeating-conic-gradient(#e5e5e5_0_25%,#fff_0_50%)] bg-[length:16px_16px] rounded-xl h-40 flex items-center justify-center">
-                      <img src={noBg!} alt="No BG" className="max-w-full max-h-full object-contain" />
+                <BeforeAfter
+                  before={original!}
+                  after={preview}
+                  beforeLabel="Original"
+                  afterLabel="Result"
+                  transparent
+                />
+
+                {/* Cut-out reference thumbnail */}
+                {noBg && noBg !== preview && (
+                  <div className="flex items-center gap-3 mt-4 pt-4 border-t border-white/5">
+                    <div className="ba-checker rounded-lg w-16 h-16 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={noBg} alt="Cut-out with transparent background" className="max-w-full max-h-full object-contain" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-gray-300">Transparent cut-out</p>
+                      <p className="text-[11px] text-gray-500 mt-0.5">
+                        The background you pick is composited onto this.
+                      </p>
                     </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 text-center">Final Result</p>
-                    <div className="bg-white/5 rounded-xl h-40 flex items-center justify-center overflow-hidden">
-                      <img src={preview!} alt="Preview" className="max-w-full max-h-full object-contain" />
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="flex gap-3">
